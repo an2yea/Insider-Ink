@@ -22,7 +22,18 @@ export function CreateAccountForm() {
     e.preventDefault()
     try {
       setError("")
-      await signup(email, password)
+      const user = await signup(email, password)
+
+      await fetch('/api/create-user/', {
+        method: 'POST',
+        body: JSON.stringify({
+          id: user.uid,
+          email: user.email,
+          username: "new_user",
+          walletAddress: "",
+          company: null,
+        }),
+      })
       router.push('/dashboard')
     } catch (err: any) {
       setError(err.message || "Failed to create account")
