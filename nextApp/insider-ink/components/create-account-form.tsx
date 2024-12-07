@@ -9,12 +9,19 @@ import { useRouter } from 'next/navigation'
 import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { useAuth } from "@/src/contexts/AuthContext"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
+const companyList = [
+    { name: "Company 1", id: "1" },
+    { name: "Company 2", id: "2" },
+    { name: "Company 3", id: "3" },
+]
 export function CreateAccountForm() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
   const [error, setError] = useState("")
+  const [selectedCompany, setSelectedCompany] = useState<{name: string, id: string}>({name: "", id: ""})
   const { signup } = useAuth()
   const router = useRouter()
 
@@ -82,6 +89,23 @@ export function CreateAccountForm() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
               />
+            </div>
+            <div className="space-y-2">
+              <Select onValueChange={(value) => {
+                const company = companyList.find(c => c.id === value)
+                setSelectedCompany(company || {name: "", id: ""})
+              }}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a company" />
+                </SelectTrigger>
+                <SelectContent>
+                  {companyList.map((company) => (
+                    <SelectItem key={company.id} value={company.id}>
+                      {company.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <Button type="submit" className="w-full">
               Create Account
