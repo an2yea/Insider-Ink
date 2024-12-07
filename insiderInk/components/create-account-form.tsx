@@ -43,8 +43,21 @@ export function CreateAccountForm() {
     }
   }
 
+  const validateEmailDomain = () => {
+    const expectedDomain = `@${selectedCompany.name.toLowerCase()}.com`
+    if (!email.endsWith(expectedDomain)) {
+      setError(`Email must end with ${expectedDomain}`)
+      return false
+    }
+    return true
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (!validateEmailDomain()) {
+      setError("Email must end with selected the company domain")
+      return
+    }
     if (walletAddress === "") {
       connectMetaMask()
       return
