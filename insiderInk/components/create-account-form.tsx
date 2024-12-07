@@ -12,6 +12,7 @@ import { useAuth } from "@/src/contexts/AuthContext"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { User } from "@/app/types/user"
 import { useDashboardContext } from "@/src/contexts/DashboardContext"
+import detectEthereumProvider  from "@metamask/detect-provider"
 
 export function CreateAccountForm() {
   const [email, setEmail] = useState("")
@@ -19,18 +20,40 @@ export function CreateAccountForm() {
   const [confirmPassword, setConfirmPassword] = useState("")
   const [error, setError] = useState("")
   const [username, setUsername] = useState("")
+  const [walletAddress, setWalletAddress] = useState("")
   const [selectedCompany, setSelectedCompany] = useState<{name: string, id: string}>({name: "", id: ""})
   const { signup } = useAuth()
   const { setUser, setUserId, companies } = useDashboardContext()
   const router = useRouter()
 
+  const connectMetaMask = async () => {
+    const provider = await detectEthereumProvider()
+    console.log("Provider:", provider)
+    if (provider) {
+      try { 
+        const accounts = await (window as any).ethereum.request({ method: "eth_requestAccounts" })
+        // const accounts = await provider.request({ method: "eth_requestAccounts" })
+        setWalletAddress(accounts[0])
+        console.log("Accounts:", accounts)
+      } catch (error) {
+        setError("User rejected the request")
+      }
+    } else {
+      setError("MetaMask not detected, please install MetaMask")
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    if (walletAddress === "") {
+      connectMetaMask()
+      return
+    }
     try {
       setError("")
       const user = await signup(email, password, {
         username: username,
-        walletAddress: "",
+        walletAddress: walletAddress,
         companyId: selectedCompany.id,
         companyName: selectedCompany.name,
       })
@@ -123,6 +146,17 @@ export function CreateAccountForm() {
                 </SelectContent>
               </Select>
             </div>
+            {walletAddress && (
+              <div className="space-y-2">
+                <Label htmlFor="wallet-address">Wallet Address</Label>
+                <Input id="wallet-address" type="text" value={walletAddress} disabled />
+              </div>
+            )}
+            {!walletAddress && (
+              <Button onClick={connectMetaMask} className="w-full">
+                Connect MetaMask
+              </Button>
+            )}
             <Button type="submit" className="w-full">
               Create Account
             </Button>
