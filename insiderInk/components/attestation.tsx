@@ -2,7 +2,7 @@ import { whistleSchema } from '@/schemas/whistleSchema'
 import { getTrueNetworkInstance } from '@/true-network/true.config'
 
 
-export default async function createWhistle(walletAddress: string, title: string, content: string) {
+export default async function createWhistle(walletAddress: string, title: string, content: string): Promise<string | undefined> {
 
     const api = await getTrueNetworkInstance()
 
@@ -14,6 +14,7 @@ export default async function createWhistle(walletAddress: string, title: string
     console.log(output)
 
     await api.network.disconnect()
+    return output
 }
 
 

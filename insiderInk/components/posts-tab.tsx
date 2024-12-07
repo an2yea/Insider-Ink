@@ -32,7 +32,25 @@ export function PostsTab() {
         console.log("Creating post:", title, content)
         try {
             if (userId) {
-                createWhistle(userId, title, content)
+                const blockHash = await createWhistle(userId, title, content)
+                if (blockHash) {
+                    const reqData = {
+                        title, 
+                        content, 
+                        userId,
+                        username: user?.username || '',
+                        companyId: user?.companyId || '',
+                        companyName: user?.companyName || '',
+                        blockHash
+                    }
+                    const response = await fetch('/api/attestations', {
+                        method: 'POST',
+                        body: JSON.stringify(reqData),
+                    })
+                    if (!response.ok) {
+                        console.error("Failed to create attestation:", response.statusText)
+                    }
+                }
             }
             const reqData = {
                 title,
