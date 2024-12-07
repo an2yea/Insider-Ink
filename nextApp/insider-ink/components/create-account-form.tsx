@@ -32,7 +32,8 @@ export function CreateAccountForm() {
       const user = await signup(email, password, {
         username: "new_user",
         walletAddress: "",
-        company: null,
+        companyId: selectedCompany.id,
+        companyName: selectedCompany.name,
       })
 
       console.log(user)
