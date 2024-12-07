@@ -19,8 +19,8 @@ export default async function createWhistle(walletAddress: string, title: string
 
 
 export async function getAttestations(walletAddress: string) {
-    const api = await getTrueNetworkInstance()
+    // const api = await getTrueNetworkInstance()
     // const attestations = await api.getAttestation(walletAddress, whistleSchema)
-    console.log("TBD: Add attestations when SDK available")
+    console.log("TBD: Add attestations when SDK available", walletAddress)
     return []
 }

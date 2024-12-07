@@ -1,17 +1,16 @@
 "use client"
 
-import { useEffect, useState } from "react"
-import { motion } from "framer-motion"
-import { useAuth } from "@/src/contexts/AuthContext"
-import { useRouter } from 'next/navigation'
-import Link from "next/link"
+import { User } from "@/app/types/user"
 import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { User } from "@/app/types/user"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { useAuth } from "@/src/contexts/AuthContext"
 import { useDashboardContext } from "@/src/contexts/DashboardContext"
-import { generateWalletAddress } from "./generateWalletAddress"
+import { motion } from "framer-motion"
+import Link from "next/link"
+import { useRouter } from 'next/navigation'
+import { useState } from "react"
 
 export function LoginForm() {
   const [email, setEmail] = useState("")

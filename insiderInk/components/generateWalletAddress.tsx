@@ -41,6 +41,6 @@ function normalizeUrl(url: string): string {
     // Ensure consistent protocol and remove trailing slash
     return `${parsedUrl.protocol}//${parsedUrl.hostname}${parsedUrl.pathname.replace(/\/$/, "")}`;
   } catch (error) {
-    throw new Error("Invalid URL");
+    throw new Error("Invalid URL" + error);
     }
 }

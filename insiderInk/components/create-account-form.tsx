@@ -1,19 +1,19 @@
 "use client"
 
-import { useState } from "react"
+import { User } from "@/app/types/user"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { zkSign } from "@/components/zkauth"
+import { useAuth } from "@/src/contexts/AuthContext"
+import { useDashboardContext } from "@/src/contexts/DashboardContext"
+import detectEthereumProvider from "@metamask/detect-provider"
 import { motion } from "framer-motion"
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { useRouter } from 'next/navigation'
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { useAuth } from "@/src/contexts/AuthContext"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { User } from "@/app/types/user"
-import { useDashboardContext } from "@/src/contexts/DashboardContext"
-import detectEthereumProvider  from "@metamask/detect-provider"
-import { zkSign } from "@/components/zkauth"
+import { useState } from "react"
 
 export function CreateAccountForm() {
   const [email, setEmail] = useState("")
@@ -36,7 +36,7 @@ export function CreateAccountForm() {
         setWalletAddress(accounts[0])
         console.log("Accounts:", accounts)
       } catch (error) {
-        setError("User rejected the request")
+        setError("User rejected the request" + error)
       }
     } else {
       setError("MetaMask not detected, please install MetaMask")
