@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Heart } from 'lucide-react'
 import { useDashboardContext } from "@/src/contexts/DashboardContext"
 import { Label } from "@radix-ui/react-label"
+import createWhistle from "./attestation"
 
 
 export function PostsTab() {
@@ -30,6 +31,9 @@ export function PostsTab() {
         // Handle post creation logic here
         console.log("Creating post:", title, content)
         try {
+            if (userId) {
+                createWhistle(userId, title, content)
+            }
             const reqData = {
                 title,
                 content,
@@ -98,7 +102,7 @@ export function PostsTab() {
                                                 className="mt-1"
                                             />
                                         </div>
-                                        <Button type="submit">Post</Button>
+                                        <Button type="submit"> Create Attestation </Button>
                                     </form>
                                 </CardContent>
                             </Card>
