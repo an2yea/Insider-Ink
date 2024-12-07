@@ -1,29 +1,19 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import { useRouter } from "next/navigation"
-import TabNavigation from "./tab-navigation"
-import CreatePost from "./create-post"
-import ViewPosts from "./view-posts"
-import CompanyPosts from "./company-posts"
-import { Button } from "./ui/button"
-
-const tabComponents = [CreatePost, ViewPosts, CompanyPosts]
+import  TabNavigation  from "./tab-navigation"
+import { Header } from "./header"
+import { PostsTab } from "./posts-tab"
+import { CompaniesTab } from "./companies-tab"
+import { useAuth } from "@/src/contexts/AuthContext"
 
 export function Dashboard() {
   const [activeTab, setActiveTab] = useState(0)
-  const router = useRouter()
-
-  const handleLogout = () => {
-    console.log("Logging out")
-    router.push("/login")
-  }
 
   return (
     <div className="min-h-screen bg-background p-8">
-      <h1 className="text-4xl font-bold text-primary mb-8"> Insider Ink </h1>
-      <Button onClick={handleLogout}>Logout</Button>
+      <Header />
       <TabNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
       <AnimatePresence mode="wait">
         <motion.div
@@ -33,12 +23,12 @@ export function Dashboard() {
           exit={{ opacity: 0, y: -20 }}
           transition={{ duration: 0.3 }}
         >
-          {tabComponents.map((Component, index) => (
-            activeTab === index && <Component key={index} />
-          ))}
+          {activeTab === 0 && <PostsTab />}
+          {activeTab === 1 && <CompaniesTab />}
         </motion.div>
       </AnimatePresence>
     </div>
   )
 }
+
 

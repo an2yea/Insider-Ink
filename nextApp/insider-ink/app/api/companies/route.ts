@@ -6,9 +6,27 @@ import { Company } from '@/app/types/company';
 export async function POST(request: Request) {
   try {
     const companyData: Company = await request.json();
-    const companyDocRef = doc(db, 'companies', companyData.id);
+    const { id, name, posts } = companyData
+    if (!id || !name) {
+        return NextResponse.json({ error: 'Company ID and name are required' }, { status: 400 });
+    }
+    const companyDocRef = doc(db, 'companies', id);
+    const companyDocSnapshot = await getDoc(companyDocRef)
 
-    await setDoc(companyDocRef, companyData);
+    if (!companyDocSnapshot.exists()) {
+
+        const newCompanyData: Company = {
+            id: id,
+            name: name,
+            description: '',
+            website: '',
+            averageRating: 0,
+            tags: [],
+            logoUrl: '',
+            posts: posts || []
+        }
+        await setDoc(companyDocRef, newCompanyData);
+    }
     return NextResponse.json({ success: true, message: 'Company created successfully' });
   } catch (error) {
     console.error('Error creating company:', error);
@@ -18,19 +36,17 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
   try {
-    const companyData: Partial<Company> & { posts?: string[] } = await request.json();
+    const companyData: Company = await request.json();
     const companyDocRef = doc(db, 'companies', companyData.id);
 
-    // Prepare the update data, only including fields that are present
-    const updateData: Partial<Company> & { posts?: string[] } = {};
-    if (companyData.name !== undefined) updateData.name = companyData.name;
-    if (companyData.description !== undefined) updateData.description = companyData.description;
-    if (companyData.website !== undefined) updateData.website = companyData.website;
-    if (companyData.averageRating !== undefined) updateData.averageRating = companyData.averageRating;
-    if (companyData.logoUrl !== undefined) updateData.logoUrl = companyData.logoUrl;
-    if (companyData.posts !== undefined) updateData.posts = companyData.posts;
-
-    await updateDoc(companyDocRef, updateData);
+    await updateDoc(companyDocRef, {
+      name: companyData.name,
+      description: companyData.description,
+      website: companyData.website,
+      averageRating: companyData.averageRating,
+      logoUrl: companyData.logoUrl,
+      
+    });
     return NextResponse.json({ success: true, message: 'Company updated successfully' });
   } catch (error) {
     console.error('Error updating company:', error);

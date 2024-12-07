@@ -3,7 +3,7 @@ export interface Post {
     content: string;
     companyId: string;
     companyName: string;
-    authorId: string;
+    userId: string;
     createdAt: Date;
     updatedAt: Date;
     mediaUrl: string;
