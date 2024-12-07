@@ -70,14 +70,7 @@ export async function POST(request: Request) {
 
       // Update company document with post ID
       const companyDoc = await getDoc(doc(db, 'companies', postData.companyId))
-      if (!companyDoc.exists()) {
-        console.log("Company document not found, creating new company entry");
-        const companyCreateURL = `${process.env.NEXT_PUBLIC_API_URL}/api/companies/create`
-        await fetch(companyCreateURL, {
-          method: 'POST',
-          body: JSON.stringify({ id: postData.companyId, name: postData.companyName, posts: [docRef.id] }),
-        })
-      } else {
+      if (companyDoc.exists()) {
         console.log("Company document found, updating with new post ID");
         const companyAddPostURL = `${process.env.NEXT_PUBLIC_API_URL}/api/companies/add-post`
         await fetch(companyAddPostURL, {

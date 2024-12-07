@@ -9,4 +9,5 @@ export interface Company {
     tags: Tag[];
     posts: string[];
     logoUrl: string;
+    walletAddress: string;
 }

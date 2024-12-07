@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { useAuth } from "@/src/contexts/AuthContext"
 import { useRouter } from 'next/navigation'
@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label"
 import { User } from "@/app/types/user"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { useDashboardContext } from "@/src/contexts/DashboardContext"
+import { generateWalletAddress } from "./generateWalletAddress"
 
 export function LoginForm() {
   const [email, setEmail] = useState("")
