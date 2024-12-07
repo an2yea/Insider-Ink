@@ -1,20 +1,38 @@
 import { whistleSchema } from '@/schemas/whistleSchema'
-import { getTrueNetworkInstance } from '@/true-network/true.config'
+import { config, getTrueNetworkInstance } from '@/true-network/true.config'
 
+interface TrueNetworkResults {
+    blockHash: string
+    reputationScore: number
+}
 
-export default async function createWhistle(walletAddress: string, title: string, content: string): Promise<string | undefined> {
+export default async function createWhistle(walletAddress: string, title: string, content: string, sentimentScore: number, currentReputation: number): Promise<TrueNetworkResults> {
 
-    const api = await getTrueNetworkInstance()
+    try {
+        const api = await getTrueNetworkInstance()
 
     const output = await whistleSchema.attest(api, walletAddress, {
-        title: title,
-        content: content,
+        sentimentScore: sentimentScore,
+        currentReputation: currentReputation,
     })
 
-    console.log(output)
+    const reputationScore = await api.getReputationScore(config.algorithm?.id ?? 0, walletAddress)
+
+    console.log('tx hash for attestation`, output')
+    console.log('reputation score', reputationScore)
 
     await api.network.disconnect()
-    return output
+
+    const response: TrueNetworkResults = {
+        blockHash: output ?? '',
+            reputationScore: reputationScore ?? 0
+        }
+
+        return response
+    } catch (error) {
+        console.error('Error creating whistle', error)
+        throw error
+    }
 }
 
 

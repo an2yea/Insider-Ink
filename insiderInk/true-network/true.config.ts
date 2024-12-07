@@ -1,6 +1,7 @@
 
 import { TrueApi, testnet } from '@truenetworkio/sdk'
 import { TrueConfig } from '@truenetworkio/sdk/dist/utils/cli-config'
+import { whistleSchema } from './whistleSchema'
 
 // If you are not in a NodeJS environment, please comment the code following code:
 import dotenv from 'dotenv'
@@ -25,9 +26,9 @@ export const config: TrueConfig = {
     hash: '0x80c4d7e1b1b2fd55ccf7980bb9d86031739249b8372a7d870c876c1a1afcb207'
   },
   algorithm: {
-    id: undefined,
-    path: undefined,
-    schemas: []
+    id: 136,
+    path: 'acm',
+    schemas: [whistleSchema]
   },
 }
   

@@ -11,6 +11,7 @@ import { Heart } from 'lucide-react'
 import { useDashboardContext } from "@/src/contexts/DashboardContext"
 import { Label } from "@radix-ui/react-label"
 import createWhistle from "./attestation"
+import { Company } from "@/app/types/company"
 
 
 export function PostsTab() {
@@ -32,48 +33,62 @@ export function PostsTab() {
         console.log("Creating post:", title, content)
         try {
             if (userId) {
-                const blockHash = await createWhistle(userId, title, content)
-                if (blockHash) {
-                    const reqData = {
-                        title, 
-                        content, 
-                        userId,
-                        username: user?.username || '',
-                        companyId: user?.companyId || '',
-                        companyName: user?.companyName || '',
-                        blockHash
+                const companyAddress = await fetch(`/api/companies/${user?.companyId}`, {
+                    method: 'GET',
+                })
+                if (companyAddress.ok) {
+                    const companyAddressData = await companyAddress.json() as Company
+                    const { blockHash , reputationScore} = await createWhistle(companyAddressData.walletAddress, title, content, 1, companyAddressData.averageRating)
+                    if (blockHash) {
+                        const reqData = {
+                            title,
+                            content,
+                            userId,
+                            username: user?.username || '',
+                            companyId: user?.companyId || '',
+                            companyName: user?.companyName || '',
+                            blockHash
+                        }
+                        const response = await fetch('/api/attestations', {
+                            method: 'POST',
+                            body: JSON.stringify(reqData),
+                        })
+                        if (!response.ok) {
+                            console.error("Failed to create attestation:", response.statusText)
+                        }
                     }
-                    const response = await fetch('/api/attestations', {
-                        method: 'POST',
-                        body: JSON.stringify(reqData),
-                    })
-                    if (!response.ok) {
-                        console.error("Failed to create attestation:", response.statusText)
+                    if (reputationScore) {
+                        const response = await fetch(`/api/companies/${user?.companyId}`, {
+                            method: 'PATCH',
+                            body: JSON.stringify({ averageRating: reputationScore }),
+                        })
+                        if (!response.ok) {
+                            console.error("Failed to update company reputation:", response.statusText)
+                        }
                     }
                 }
-            }
-            const reqData = {
-                title,
-                content,
-                companyId: user?.companyId || '',
-                userId: userId || '',
-                companyName: user?.companyName || '',
-                media: media,
-            }
-            
-            console.log("reqData", reqData)
-            const response = await fetch('/api/posts/create', {
-                method: 'POST',
-                body: JSON.stringify(reqData),
-            })
-            if (!response.ok) {
-                console.error("Failed to create post:", response.statusText)
-            }
-            setIsCreatePostOpen(false)
-            setTitle("")
-            setContent("")
-            setMedia(null)
+                const reqData = {
+                    title,
+                    content,
+                    companyId: user?.companyId || '',
+                    userId: userId || '',
+                    companyName: user?.companyName || '',
+                    media: media,
+                }
 
+                console.log("reqData", reqData)
+                const response = await fetch('/api/posts/create', {
+                    method: 'POST',
+                    body: JSON.stringify(reqData),
+                })
+                if (!response.ok) {
+                    console.error("Failed to create post:", response.statusText)
+                }
+                setIsCreatePostOpen(false)
+                setTitle("")
+                setContent("")
+                setMedia(null)
+            }
         } catch (error) {
             console.error("Error creating post:", error)
         }
