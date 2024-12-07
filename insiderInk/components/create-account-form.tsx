@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { User } from "@/app/types/user"
 import { useDashboardContext } from "@/src/contexts/DashboardContext"
 import detectEthereumProvider  from "@metamask/detect-provider"
+import { zkSign } from "@/components/zkauth"
 
 export function CreateAccountForm() {
   const [email, setEmail] = useState("")
@@ -32,7 +33,6 @@ export function CreateAccountForm() {
     if (provider) {
       try { 
         const accounts = await (window as any).ethereum.request({ method: "eth_requestAccounts" })
-        // const accounts = await provider.request({ method: "eth_requestAccounts" })
         setWalletAddress(accounts[0])
         console.log("Accounts:", accounts)
       } catch (error) {
@@ -51,6 +51,11 @@ export function CreateAccountForm() {
     }
     try {
       setError("")
+      const isZkSigned = await zkSign(email, username)
+      if (!isZkSigned) {
+        setError("Failed to verify email")
+        return
+      }
       const user = await signup(email, password, {
         username: username,
         walletAddress: walletAddress,
