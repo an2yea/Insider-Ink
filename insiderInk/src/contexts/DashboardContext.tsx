@@ -3,6 +3,7 @@
 import { createContext, ReactNode, useContext, useState } from "react"
 import { User } from "@/app/types/user"
 import { Company } from "@/app/types/company"
+import { Post } from "@/app/types/posts"
 
 interface DashboardContextType {
   user: User | null
@@ -13,6 +14,10 @@ interface DashboardContextType {
   setActiveTab: (tab: number) => void
   userId: string | null
   setUserId: (userId: string | null) => void
+  companies: Company[]
+  setCompanies: (companies: Company[]) => void
+  posts: Post[]
+  setPosts: (posts: Post[]) => void
 }
 
 const DashboardContext = createContext<DashboardContextType | undefined>(undefined)
@@ -21,9 +26,11 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null)
   const [selectedCompanyId, setSelectedCompanyId] = useState<string | null>(null)
     const [activeTab, setActiveTab] = useState(0)
-  const [userId, setUserId] = useState<string | null>(null)
+  const [userId, setUserId] = useState<string | null>(null)   
+  const [companies, setCompanies] = useState<Company[]>([])
+  const [posts, setPosts] = useState<Post[]>([])
   return (
-    <DashboardContext.Provider value={{ user, setUser, selectedCompanyId, setSelectedCompanyId, activeTab, setActiveTab, userId, setUserId }}>
+    <DashboardContext.Provider value={{ user, setUser, selectedCompanyId, setSelectedCompanyId, activeTab, setActiveTab, userId, setUserId, companies, setCompanies, posts, setPosts }}>
       {children}
     </DashboardContext.Provider>
   )

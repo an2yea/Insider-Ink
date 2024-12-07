@@ -7,64 +7,11 @@ import { useDashboardContext } from "@/src/contexts/DashboardContext"
 // import { dummyCompanies as companies } from "@/lib/dummyCompany"
 
 import { Company } from "@/app/types/company"
+import { useEffect, useState } from "react"
 
 export function CompaniesTab() {
 
-    const { setSelectedCompanyId, setActiveTab } = useDashboardContext()
-
-
-const companies: Company[] = [
-    {
-        id: "1",
-        name: "TechPioneers Inc.",
-        description: "A leading company revolutionizing technology for distributed systems.",
-        website: "https://techpioneers.com",
-        averageRating: 4.5,
-        tags: [{ id: "101", name: "Technology", rating: 4.5 }, { id: "102", name: "Distributed Systems", rating: 4.5 }],
-        posts: ["Scaling Distributed Systems"],
-        logoUrl: "https://example.com/logos/techpioneers.png",
-    },
-    {
-        id: "2",
-        name: "AIVisionary Co.",
-        description: "Shaping the future with cutting-edge AI and automation.",
-        website: "https://aivisionary.com",
-        averageRating: 4.7,
-        tags: [{ id: "103", name: "AI", rating: 4.7 }, { id: "104", name: "Innovation", rating: 4.7 }],
-        posts: ["Future of AI Agents"],
-        logoUrl: "https://example.com/logos/aivisionary.png",
-    },
-    {
-        id: "3",
-        name: "CloudNexus",
-        description: "Experts in cloud technologies and Kubernetes optimization.",
-        website: "https://cloudnexus.com",
-        averageRating: 4.6,
-        tags: [{ id: "105", name: "Cloud", rating: 4.6 }, { id: "106", name: "Kubernetes", rating: 4.6 }],
-        posts: ["Kubernetes Best Practices"],
-        logoUrl: "https://example.com/logos/cloudnexus.png",
-    },
-    {
-        id: "4",
-        name: "ResilientTech",
-        description: "Building reliable microservices for a resilient future.",
-        website: "https://resilienttech.com",
-        averageRating: 4.4,
-        tags: [{ id: "107", name: "Microservices", rating: 4.4 }, { id: "108", name: "Reliability", rating: 4.4 }],
-        posts: ["Building Resilient Microservices"],
-        logoUrl: "https://example.com/logos/resilienttech.png",
-    },
-    {
-        id: "5",
-        name: "TeamEmpower",
-        description: "Empowering remote teams with collaborative solutions.",
-        website: "https://teamempower.com",
-        averageRating: 4.3,
-        tags: [{ id: "109", name: "Remote Work", rating: 4.3 }, { id: "110", name: "Collaboration", rating: 4.3 }],
-        posts: ["Empowering Remote Teams"],
-        logoUrl: "https://example.com/logos/teamempower.png",
-        },
-    ];
+    const { setSelectedCompanyId, setActiveTab, companies } = useDashboardContext()
 
     const handleCompanyClick = (companyId: string) => {
         setSelectedCompanyId(companyId)

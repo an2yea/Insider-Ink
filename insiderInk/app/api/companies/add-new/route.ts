@@ -14,8 +14,8 @@ export async function POST(request: Request) {
     }
 
     // Add the new company to the 'companies' collection
-    const response = await addDoc(collection(db, 'companies'), {
-      name: companyData.name,
+    await addDoc(collection(db, 'companies'), {
+      name: companyData.name,   
       description: companyData.description || '',
       website: companyData.website || '',
       averageRating: companyData.averageRating || 0,
@@ -24,7 +24,7 @@ export async function POST(request: Request) {
       walletAddress: generateWalletAddress(companyData.website)
     });
 
-    return NextResponse.json({ success: true, companyId: response.id, message: 'Company created successfully'});
+    return NextResponse.json({ success: true, message: 'Company created successfully' });
   } catch (error) {
     console.error('Error creating company:', error);
     return NextResponse.json({ error: 'Failed to create company' }, { status: 500 });

@@ -6,7 +6,6 @@ import  TabNavigation  from "./tab-navigation"
 import { Header } from "./header"
 import { PostsTab } from "./posts-tab"
 import { CompaniesTab } from "./companies-tab"
-import { useAuth } from "@/src/contexts/AuthContext"
 
 export function Dashboard() {
   const [activeTab, setActiveTab] = useState(0)

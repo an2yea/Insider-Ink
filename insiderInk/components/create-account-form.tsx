@@ -13,11 +13,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { User } from "@/app/types/user"
 import { useDashboardContext } from "@/src/contexts/DashboardContext"
 
-const companyList = [
-    { name: "Company 1", id: "1" },
-    { name: "Company 2", id: "2" },
-    { name: "Company 3", id: "3" },
-]
 export function CreateAccountForm() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -26,7 +21,7 @@ export function CreateAccountForm() {
   const [username, setUsername] = useState("")
   const [selectedCompany, setSelectedCompany] = useState<{name: string, id: string}>({name: "", id: ""})
   const { signup } = useAuth()
-  const { setUser, setUserId } = useDashboardContext()
+  const { setUser, setUserId, companies } = useDashboardContext()
   const router = useRouter()
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -113,14 +108,14 @@ export function CreateAccountForm() {
             </div>
             <div className="space-y-2">
               <Select value={selectedCompany.id} onValueChange={(value) => {
-                const company = companyList.find(c => c.id === value)
+                const company = companies.find(c => c.id === value)
                 setSelectedCompany(company || {name: "", id: ""})
               }}>
                 <SelectTrigger>
                   <SelectValue placeholder="Select a company" />
                 </SelectTrigger>
                 <SelectContent>
-                  {companyList.map((company) => (
+                  {companies.map((company) => (
                     <SelectItem key={company.id} value={company.id}>
                       {company.name}
                     </SelectItem>
