@@ -1,8 +1,9 @@
 "use client"
 
 import { Dashboard } from "@/components/dashboard"
+import { DashboardProvider } from "@/src/contexts/DashboardContext"
 
 export default function DashboardPage() {
-  return <Dashboard />
+  return <DashboardProvider><Dashboard /></DashboardProvider>
 }
 

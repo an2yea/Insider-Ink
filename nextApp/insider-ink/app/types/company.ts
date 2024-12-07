@@ -7,4 +7,6 @@ export interface Company {
     website: string;
     averageRating: number;
     tags: Tag[];
+    posts: string[];
+    logoUrl: string;
 }
