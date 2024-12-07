@@ -8,7 +8,9 @@ import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { User } from "@/app/types/user"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { useDashboardContext } from "@/src/contexts/DashboardContext"
 
 export function LoginForm() {
   const [email, setEmail] = useState("")
@@ -16,12 +18,23 @@ export function LoginForm() {
   const { login } = useAuth()
   const [error, setError] = useState("")
   const router = useRouter()
+  const { setUser } = useDashboardContext()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
       setError("")
-      await login(email, password)
+      console.log("logging in")
+      const res = await login(email, password)
+
+      // fetch the user data from the database
+      const userData = await fetch(`/api/users/${res?.uid}`)
+      console.log("user data", userData)
+      const userObject = await userData.json() as User
+      console.log("user object", userObject)
+      setUser(userObject) // set the user in the dashboard context
+
+      console.log(userObject)
       router.push('/dashboard')
     } catch (err: any) {
       setError(err.message || "Failed to login")
