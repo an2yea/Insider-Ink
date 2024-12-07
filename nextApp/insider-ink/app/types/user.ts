@@ -5,5 +5,6 @@ export interface User {
     username: string;
     email: string;
     walletAddress: string;
-    company: Company;
+    companyId: string | null;
+    companyName: string | null;
 }

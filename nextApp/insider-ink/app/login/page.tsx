@@ -1,7 +1,6 @@
 "use client"
 
 import { LoginForm } from "@/components/login-form"
-import { DashboardProvider } from "@/src/contexts/DashboardContext"
 
 export default function LoginPage() {
   return (

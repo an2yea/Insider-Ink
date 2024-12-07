@@ -18,7 +18,7 @@ export function LoginForm() {
   const { login } = useAuth()
   const [error, setError] = useState("")
   const router = useRouter()
-  const { setUser } = useDashboardContext()
+  const { setUser, setUserId } = useDashboardContext()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -27,11 +27,10 @@ export function LoginForm() {
       console.log("logging in")
       const res = await login(email, password)
 
+      setUserId(res?.uid)
       // fetch the user data from the database
       const userData = await fetch(`/api/users/${res?.uid}`)
-      console.log("user data", userData)
       const userObject = await userData.json() as User
-      console.log("user object", userObject)
       setUser(userObject) // set the user in the dashboard context
 
       console.log(userObject)

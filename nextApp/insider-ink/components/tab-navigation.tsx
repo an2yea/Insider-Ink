@@ -7,12 +7,12 @@ interface TabNavigationProps {
   setActiveTab: (index: number) => void
 }
 
-const tabItems = ["Create Post", "View Posts", "Company Posts"]
+const tabItems = ["Posts", "Companies"]
 
-function TabNavigation({ activeTab, setActiveTab }: TabNavigationProps) {
+export default function TabNavigation({ activeTab, setActiveTab }: TabNavigationProps) {
   return (
     <Tabs value={activeTab.toString()} onValueChange={(value) => setActiveTab(parseInt(value))}>
-      <TabsList className="grid w-full grid-cols-3 mb-8">
+      <TabsList className="grid w-full grid-cols-2 mb-8">
         {tabItems.map((item, index) => (
           <TabsTrigger
             key={index}
@@ -26,6 +26,4 @@ function TabNavigation({ activeTab, setActiveTab }: TabNavigationProps) {
     </Tabs>
   )
 }
-
-export default TabNavigation
 
