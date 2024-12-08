@@ -12,6 +12,7 @@ import { useDashboardContext } from "@/src/contexts/DashboardContext"
 import { Label } from "@radix-ui/react-label"
 import createWhistle from "./attestation"
 import { Company } from "@/app/types/company"
+import getSentimentScore from "./getSentimentScore"
 
 
 export function PostsTab() {
@@ -31,6 +32,10 @@ export function PostsTab() {
         e.preventDefault()
         // Handle post creation logic here
         console.log("Creating post:", title, content)
+        let sentimentScore = 0
+        if (content){
+            sentimentScore = await getSentimentScore(content)
+        }
         try {
             if (userId) {
                 const companyAddress = await fetch(`/api/companies/${user?.companyId}`, {
@@ -38,7 +43,7 @@ export function PostsTab() {
                 })
                 if (companyAddress.ok) {
                     const companyAddressData = await companyAddress.json() as Company
-                    const { blockHash , reputationScore} = await createWhistle(companyAddressData.walletAddress, title, content, 1, companyAddressData.averageRating)
+                    const { blockHash , reputationScore} = await createWhistle(companyAddressData.walletAddress, title, content, sentimentScore, companyAddressData.averageRating)
                     if (blockHash) {
                         const reqData = {
                             title,

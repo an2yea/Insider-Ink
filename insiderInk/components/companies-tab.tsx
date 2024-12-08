@@ -4,7 +4,6 @@ import { motion } from "framer-motion"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { useDashboardContext } from "@/src/contexts/DashboardContext"
-// import { dummyCompanies as companies } from "@/lib/dummyCompany"
 
 import { Company } from "@/app/types/company"
 import { useEffect, useState } from "react"
