@@ -1,14 +1,13 @@
 "use client"
 
-import { useState } from "react"
-import Image from "next/image"
-import { motion, AnimatePresence } from "framer-motion"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { useRouter } from "next/navigation"
-import { useDashboardContext } from "@/src/contexts/DashboardContext"
 import { useAuth } from "@/src/contexts/AuthContext"
+import { useDashboardContext } from "@/src/contexts/DashboardContext"
+import Image from "next/image"
+import { useRouter } from "next/navigation"
+import { useState } from "react"
 
 export function Header( ) {
   const [isOpen, setIsOpen] = useState(false)

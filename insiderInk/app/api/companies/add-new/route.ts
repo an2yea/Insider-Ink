@@ -12,7 +12,6 @@ export async function POST(request: Request) {
     if (!companyData.name || !companyData.website) {
       return NextResponse.json({ error: 'Company name and website are required' }, { status: 400 });
     }
-
     // Add the new company to the 'companies' collection
     await addDoc(collection(db, 'companies'), {
       name: companyData.name,   

@@ -1,12 +1,11 @@
 import { OauthClient } from "@zk-email/oauth-sdk";
-import { PublicClient, createPublicClient, Address, http } from 'viem';
+import { Address, createPublicClient, http } from 'viem';
 import { baseSepolia } from 'viem/chains';
 
 
 export default function ZkAuth() {
     return <div>ZkAuth</div>
 }
-
 
 export async function createOAuthInstance() {
     console.log("Creating OAuth instance")
