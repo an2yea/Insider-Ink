@@ -21,7 +21,7 @@ export function CreateAccountForm() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState("")
   const [error, setError] = useState("")
   const [username, setUsername] = useState("")
   const [walletAddress, setWalletAddress] = useState("")
@@ -66,11 +66,13 @@ export function CreateAccountForm() {
     }
     try {
       setError("")
+      setIsLoading("Please check your email for a verification code and wait while we verify your email through ZK and create your account...")
       const isZkSigned = await zkSign(email, username)
       if (!isZkSigned) {
         setError("Failed to verify email")
         return
       }
+      setIsLoading("")
       const user = await signup(email, password, {
         username: username,
         walletAddress: walletAddress,
