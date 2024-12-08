@@ -1,6 +1,6 @@
-import { Schema, Text, U16 } from "@truenetworkio/sdk"
+import { Schema, I16 } from "@truenetworkio/sdk"
 
 export const whistleSchema = Schema.create({
-    sentimentScore: U16,
-    currentReputation: U16,
+    sentimentScore: I16,
+    currentReputation: I16,
 })

@@ -7,7 +7,6 @@ interface TrueNetworkResults {
 }
 
 export default async function createWhistle(walletAddress: string, title: string, content: string, sentimentScore: number, currentReputation: number): Promise<TrueNetworkResults> {
-
     try {
         const api = await getTrueNetworkInstance()
 
@@ -37,8 +36,9 @@ export default async function createWhistle(walletAddress: string, title: string
 
 
 export async function getAttestations(walletAddress: string) {
-    // const api = await getTrueNetworkInstance()
+    const api = await getTrueNetworkInstance()
     // const attestations = await api.getAttestation(walletAddress, whistleSchema)
+    const attestations = await whistleSchema.getAttestations(api, walletAddress)
     console.log("TBD: Add attestations when SDK available", walletAddress)
-    return []
+    return attestations
 }

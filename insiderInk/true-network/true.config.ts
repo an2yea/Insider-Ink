@@ -26,7 +26,7 @@ export const config: TrueConfig = {
     hash: '0x80c4d7e1b1b2fd55ccf7980bb9d86031739249b8372a7d870c876c1a1afcb207'
   },
   algorithm: {
-    id: 136,
+    id: 147,
     path: 'acm',
     schemas: [whistleSchema]
   },
