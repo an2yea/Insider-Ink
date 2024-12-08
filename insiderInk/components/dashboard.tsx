@@ -7,14 +7,14 @@ import { Header } from "./header"
 import { PostsTab } from "./posts-tab"
 import { CompaniesTab } from "./companies-tab"
 import { useDashboardContext } from "@/src/contexts/DashboardContext"
-import { redirect } from "next/navigation"
+import { useRouter } from "next/navigation"
 
 export function Dashboard() {
   const [activeTab, setActiveTab] = useState(0)
   const { user } = useDashboardContext()
-
+  const router = useRouter()
   if (!user) {
-    redirect("/login")
+    router.push("/login")
   }
 
   return (
