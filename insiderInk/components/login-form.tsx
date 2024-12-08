@@ -18,7 +18,11 @@ export function LoginForm() {
   const { login } = useAuth()
   const [error, setError] = useState("")
   const router = useRouter()
-  const { setUser, setUserId } = useDashboardContext()
+  const { user, setUser, setUserId } = useDashboardContext()
+
+  if (user) {
+    router.push("/dashboard")
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()

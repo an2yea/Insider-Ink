@@ -6,9 +6,16 @@ import  TabNavigation  from "./tab-navigation"
 import { Header } from "./header"
 import { PostsTab } from "./posts-tab"
 import { CompaniesTab } from "./companies-tab"
+import { useDashboardContext } from "@/src/contexts/DashboardContext"
+import { redirect } from "next/navigation"
 
 export function Dashboard() {
   const [activeTab, setActiveTab] = useState(0)
+  const { user } = useDashboardContext()
+
+  if (!user) {
+    redirect("/login")
+  }
 
   return (
     <div className="min-h-screen bg-background p-8">
