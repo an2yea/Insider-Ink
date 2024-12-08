@@ -14,11 +14,14 @@ import { motion } from "framer-motion"
 import Link from "next/link"
 import { useRouter } from 'next/navigation'
 import { useState } from "react"
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
+import { Loader2 } from "lucide-react"
 
 export function CreateAccountForm() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
   const [username, setUsername] = useState("")
   const [walletAddress, setWalletAddress] = useState("")
@@ -46,7 +49,7 @@ export function CreateAccountForm() {
   const validateEmailDomain = () => {
     const expectedDomain = `@${selectedCompany.name.toLowerCase()}.com`
     if (!email.endsWith(expectedDomain)) {
-      setError(`Email must end with ${expectedDomain}`)
+      setError(`Email must be of domain ${expectedDomain} as you are signing up to be part of ${selectedCompany.name} organisation`)
       return false
     }
     return true
@@ -55,7 +58,6 @@ export function CreateAccountForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!validateEmailDomain()) {
-      setError("Email must end with selected the company domain")
       return
     }
     if (walletAddress === "") {
@@ -94,11 +96,16 @@ export function CreateAccountForm() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      {error && (
-        <div className="p-3 text-sm text-red-500 text-center">
-          {error}
-        </div>
-      )}
+      <Dialog open={!!error} onOpenChange={() => setError("")}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Error</DialogTitle>
+          </DialogHeader>
+          <div className="text-sm text-red-500 text-center">
+            {error}
+          </div>
+        </DialogContent>
+      </Dialog>
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-center">Create Account</CardTitle>
@@ -189,6 +196,22 @@ export function CreateAccountForm() {
           </p>
         </CardFooter>
       </Card>
+      {isLoading && (
+            <motion.div
+              key="loading"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.8 }}
+              transition={{ duration: 0.5, type: 'spring' }}
+              className="flex flex-col items-center justify-center h-64"
+            >
+              <Loader2 className="w-16 h-16 text-primary animate-spin mb-4" />
+              <h2 className="text-2xl font-bold mb-2"> Verifying Email and Creating Account</h2>
+              <p className="text-center text-muted-foreground">
+                Please check your email for a verification code and wait while we verify your email through ZK and create your account...
+              </p>
+          </motion.div>
+        )}
     </motion.div>
   )
 }

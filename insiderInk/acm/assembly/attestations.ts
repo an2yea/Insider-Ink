@@ -10,12 +10,12 @@ function readMemory<T>(index: usize): T {
 
 
 class WHISTLESCHEMA {
-  sentimentScore: u16;
-  currentReputation: u16;
+  sentimentScore: i16;
+  currentReputation: i16;
 
   constructor() {
-    this.sentimentScore = readMemory<u16>(0);
-    this.currentReputation = readMemory<u16>(2);
+    this.sentimentScore = readMemory<i16>(0);
+    this.currentReputation = readMemory<i16>(2);
   }
 }
 
