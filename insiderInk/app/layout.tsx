@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { AuthProvider } from "@/src/contexts/AuthContext";
 import { DashboardProvider } from "@/src/contexts/DashboardContext";
+import { StatusDialog } from "@/components/StatusDialog";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -32,6 +33,7 @@ export default function RootLayout({
       >
         <AuthProvider>
           <DashboardProvider>
+            <StatusDialog />
             {children}
           </DashboardProvider>
         </AuthProvider>

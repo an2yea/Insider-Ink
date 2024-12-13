@@ -12,11 +12,11 @@ export function Header( ) {
   const [isOpen, setIsOpen] = useState(false)
   const { logout } = useAuth()
   const router = useRouter()
-  const { user, setUser } = useDashboardContext()
-
+  const { user, setUser, statusLoading, statusSuccessful} = useDashboardContext()
   const handleLogout = () => {
-    console.log("Logging out")
+    statusLoading("Logging out")
     logout()
+    statusSuccessful("Successfully logged out")
     setUser(null)
     router.push("/login")
   }

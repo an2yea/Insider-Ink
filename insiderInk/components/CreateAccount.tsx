@@ -1,12 +1,12 @@
 "use client"
 
 import { User } from "@/app/types/user"
+import { zkSign } from "@/components/functions/zkauth"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { zkSign } from "@/components/zkauth"
 import { useAuth } from "@/src/contexts/AuthContext"
 import { useDashboardContext } from "@/src/contexts/DashboardContext"
 import detectEthereumProvider from "@metamask/detect-provider"
@@ -14,20 +14,18 @@ import { motion } from "framer-motion"
 import Link from "next/link"
 import { useRouter } from 'next/navigation'
 import { useState } from "react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
-import { Loader2 } from "lucide-react"
 
-export function CreateAccountForm({ error, setError }: { error: string | null, setError: (error: string) => void }) {
+export function CreateAccountForm() {
+  const test_without_zk = true
+  
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
-  const [isLoading, setIsLoading] = useState("")
-  //const [error, setError] = useState("")
   const [username, setUsername] = useState("")
   const [walletAddress, setWalletAddress] = useState("")
   const [selectedCompany, setSelectedCompany] = useState<{name: string, id: string}>({name: "", id: ""})
   const { signup } = useAuth()
-  const { user, setUser, setUserId, companies } = useDashboardContext()
+  const { user, setUser, setUserId, companies, statusFailure, statusSuccessful, statusLoading} = useDashboardContext()
   const router = useRouter()
 
   if (user) {
@@ -43,17 +41,18 @@ export function CreateAccountForm({ error, setError }: { error: string | null, s
         setWalletAddress(accounts[0])
         console.log("Accounts:", accounts)
       } catch (error) {
-        setError("User rejected the request" + error)
+        statusFailure(`Could not connect Metamask ${error}`)
       }
     } else {
-      setError("MetaMask not detected, please install MetaMask")
+
+      statusFailure("MetaMask not detected, please install MetaMask")
     }
   }
 
   const validateEmailDomain = () => {
     const expectedDomain = `@${selectedCompany.name.toLowerCase()}.com`
     if (!email.endsWith(expectedDomain)) {
-      setError(`Email must be of domain ${expectedDomain} as you are signing up to be part of ${selectedCompany.name} organisation`)
+      statusFailure(`Email must be of domain ${expectedDomain} as you are signing up to be part of ${selectedCompany.name} organisation`)
       return false
     }
     return true
@@ -69,13 +68,18 @@ export function CreateAccountForm({ error, setError }: { error: string | null, s
       return
     }
     try {
-      setError("Please check your email for a verification code and wait while we verify your email through ZK and create your account...")
-      const isZkSigned = await zkSign(email, username)
+      statusLoading("Please check your email for verification, and wait while we verify your email through ZK...")
+      let isZkSigned
+      if (test_without_zk) {
+        isZkSigned = true
+      } else {
+        isZkSigned = await zkSign(email, username)
+      }
       if (!isZkSigned) {
-        setError("Failed to verify email")
+        statusFailure("Failed to verify email")
         return
       }
-      setError("ZK verified, creating your account")
+      statusSuccessful("ZK verified, creating your account")
       const user = await signup(email, password, {
         username: username,
         walletAddress: walletAddress,
@@ -89,12 +93,9 @@ export function CreateAccountForm({ error, setError }: { error: string | null, s
       const userObject = await userData.json() as User
       setUser(userObject) // set the user in the dashboard context
 
-      setError("")
       router.push('/dashboard')
     } catch (err: any) {
-      setError(err.message || "Failed to create account")
-      setIsLoading("")
-      setError("")
+      statusFailure(err.message || "Failed to create account")
     }
   }
 
@@ -104,16 +105,6 @@ export function CreateAccountForm({ error, setError }: { error: string | null, s
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      {/* <Dialog open={!!error} onOpenChange={() => setError("")}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Error</DialogTitle>
-          </DialogHeader>
-          <div className="text-sm text-red-500 text-center">
-            {error}
-          </div>
-        </DialogContent>
-      </Dialog> */}
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-center">Create Account</CardTitle>
@@ -204,22 +195,6 @@ export function CreateAccountForm({ error, setError }: { error: string | null, s
           </p>
         </CardFooter>
       </Card>
-      {isLoading.length > 0 && (
-            <motion.div
-              key="loading"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.8 }}
-              transition={{ duration: 0.5, type: 'spring' }}
-              className="flex flex-col items-center justify-center h-64"
-            >
-              <Loader2 className="w-16 h-16 text-primary animate-spin mb-4" />
-              <h2 className="text-2xl font-bold mb-2"> {isLoading} </h2>
-              <p className="text-center text-muted-foreground">
-                Please check your email for a verification code and wait while we verify your email through ZK and create your account...
-              </p>
-          </motion.div>
-        )}
     </motion.div>
   )
 }

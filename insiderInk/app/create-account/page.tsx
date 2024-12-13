@@ -1,6 +1,6 @@
 "use client"
 
-import { CreateAccountForm } from "@/components/create-account-form"
+import { CreateAccountForm } from "@/components/CreateAccount"
 import { Company } from "../types/company"
 import { AnimatePresence } from "framer-motion"
 import { useEffect } from "react"
@@ -35,7 +35,7 @@ export default function CreateAccountPage() {
   return (
     <ToastProvider>
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <CreateAccountForm error={error} setError={setError} />
+      <CreateAccountForm />
     </div>
     <AnimatePresence>
       {error && (
