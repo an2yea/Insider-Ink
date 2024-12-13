@@ -17,6 +17,7 @@ import { useEffect } from "react"
 import { ToastProvider, ToastViewport, Toast, ToastTitle, ToastDescription, ToastClose } from "@/components/ui/toast";
 import { X } from "lucide-react"
 import { Post } from "@/app/types/posts"
+import {format} from 'date-fns'
 
 export function PostsTab() {
     const [content, setContent] = useState("")
@@ -38,6 +39,12 @@ export function PostsTab() {
             return () => clearTimeout(timer)
         }
     }, [error])
+    
+    const sortedPosts = filteredPosts.sort((a, b) => {
+        return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(); // Sort in descending order
+    
+    });
+
     const handleCloseError = () => {
         setError(null)
     }
@@ -191,11 +198,11 @@ export function PostsTab() {
                             </Button>
                         )}
                     </div>
-                    {filteredPosts.map((post, index) => (
+                    {sortedPosts.map((post, index) => (
                         <Card key={index}>
                             <CardHeader>
                                 <CardTitle>{post.title}</CardTitle>
-                                <p className="text-sm text-muted-foreground">{post.companyName} • {new Date(post.createdAt).toLocaleString()}</p>
+                                <p className="text-sm text-muted-foreground">{post.companyName} • {format(new Date(post.createdAt), 'MMMM d, yyyy h:mm a')}</p>
                             </CardHeader>
                             <CardContent>
                                 <p>{post.content}</p>

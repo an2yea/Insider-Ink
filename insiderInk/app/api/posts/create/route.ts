@@ -46,8 +46,8 @@ export async function POST(request: Request) {
       userId: userId,
       companyId: companyId,
       companyName: companyName,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     }
 
     console.log("Post data prepared:", postData);
