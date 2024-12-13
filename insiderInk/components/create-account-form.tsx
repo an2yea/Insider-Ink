@@ -6,7 +6,7 @@ import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/componen
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { zkSign } from "@/components/zkauth"
+import { zkSign } from "@/components/functions/zkauth"
 import { useAuth } from "@/src/contexts/AuthContext"
 import { useDashboardContext } from "@/src/contexts/DashboardContext"
 import detectEthereumProvider from "@metamask/detect-provider"

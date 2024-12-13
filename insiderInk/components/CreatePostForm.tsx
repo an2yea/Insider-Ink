@@ -5,8 +5,8 @@ import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@radix-ui/react-label"
 import { useState } from "react"
 import { useDashboardContext } from "@/src/contexts/DashboardContext"
-import createWhistle from "./attestation"
-import getSentimentScore from "./getSentimentScore"
+import createWhistle from "./functions/attestation"
+import getSentimentScore from "./functions/getSentimentScore"
 import { Post } from "@/app/types/posts"
 import { Company } from "@/app/types/company"
 
@@ -16,6 +16,30 @@ const CreatePostForm: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     const [content, setContent] = useState("")
     const [media, setMedia] = useState<File | null>(null)
     const [error, setError] = useState<string | null>(null)
+
+    const fetchPosts = async () => {
+        startLoading("Fetching Updated Posts")
+        const postsData = await fetch("/api/posts/get")
+        const postsObject = await postsData.json() as Post[]
+        console.log("Posts:", postsObject)
+        stopLoading()
+        setPosts(postsObject) // set the posts in the dashboard context
+    }
+    const fetchCompanies = async () => {
+        startLoading("Fetching updated companies with reputation scores")
+        const companiesData = await fetch("/api/companies/get")
+        const companiesObject = await companiesData.json() as Company[]
+        console.log("Companies:", companiesObject)
+        stopLoading()
+        setCompanies(companiesObject) // set the companies in the dashboard context
+      }
+    const getCompany = async() => {
+        const response = await fetch(`/api/companies/${user?.companyId}`, {
+            method: 'GET',
+        })
+        const companyDetails = await response.json() as Company
+        return companyDetails
+    }
 
     const handleCreatePost = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -108,6 +132,8 @@ const CreatePostForm: React.FC<{ onClose: () => void }> = ({ onClose }) => {
         } catch (error) {
             console.error("Error creating post:", error);
         }
+        fetchPosts()
+        fetchCompanies()
     };
 
     return (
