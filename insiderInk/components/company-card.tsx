@@ -29,7 +29,7 @@ export function CompanyCard({ company }: CompanyCardProps) {
                         <div className="w-full bg-secondary rounded-full h-2.5">
                             <div
                                 className="bg-primary h-2.5 rounded-full"
-                                style={{ width: `${(company.score / 10) * 100}%` }}
+                                style={{ width: `${(company.score / 10000) * 100}%` }}
                             ></div>
                         </div>
                     </div>

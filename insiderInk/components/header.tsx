@@ -26,7 +26,7 @@ export function Header( ) {
     <header className="bg-background border-b border-border p-4">
       <div className="container mx-auto flex justify-between items-center">
         <div className="flex items-center space-x-4">
-          <Image src="/logo.svg" alt="App Logo" width={40} height={40} />
+          {/* <Image src="/logo.svg" alt="App Logo" width={40} height={40} /> */}
           <h1 className="text-2xl font-bold text-primary">Insider Ink</h1>
         </div>
         <Dialog open={isOpen} onOpenChange={setIsOpen}>

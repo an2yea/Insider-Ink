@@ -6,14 +6,16 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import { Notification } from "@/components/ui/notification"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Heart } from 'lucide-react'
 import { useDashboardContext } from "@/src/contexts/DashboardContext"
 import { Label } from "@radix-ui/react-label"
 import createWhistle from "./attestation"
-import { Company } from "@/app/types/company"
 import getSentimentScore from "./getSentimentScore"
-
+import { useEffect } from "react"
+import { ToastProvider, ToastViewport, Toast, ToastTitle, ToastDescription, ToastClose } from "@/components/ui/toast";
+import { X } from "lucide-react"
 
 export function PostsTab() {
     const [content, setContent] = useState("")
@@ -22,34 +24,43 @@ export function PostsTab() {
     const [isCreatePostOpen, setIsCreatePostOpen] = useState(false)
     const { selectedCompanyId, setSelectedCompanyId, companies, posts } = useDashboardContext()
     const { user, userId } = useDashboardContext()
-
-
+   //  const [notification, setNotification] = useState<string | null>(null); // State for notification
+    const [error, setError] = useState<string | null>(null)
     const filteredPosts = selectedCompanyId
         ? posts.filter(post => post.companyId === selectedCompanyId)
         : posts
-
+        useEffect(() => {
+            if (error) {
+            const timer = setTimeout(() => {
+                setError(null)
+              }, 5000)
+            return () => clearTimeout(timer)
+            }
+          }, [error])
+          const handleCloseError = () => {
+            setError(null)
+          }
+        
     const handleCreatePost = async (e: React.FormEvent) => {
         e.preventDefault()
-        // Handle post creation logic here
         console.log("Creating post:", title, content)
+        setError("Creating post...")
         let sentimentScore = 0
         if (content){
             sentimentScore = await getSentimentScore(content)
+            setError("Post received, sentiment score: " + sentimentScore)
         }
         try {
             if (userId) {
-                const companyAddress = await fetch(`/api/companies/${user?.companyId}`, {
-                    method: 'GET',
-                })
-                if (companyAddress.ok) {
-                    const companyAddressData = await companyAddress.json() as Company
-                    const { blockHash , reputationScore} = await createWhistle(companyAddressData.walletAddress, title, content, sentimentScore, companyAddressData.averageRating)
+                setError("Creating attestation for your post...")
+                    const { blockHash , reputationScore} = await createWhistle("0x4dfc63734049dcf6219aac77f02edf94b9162c09", title, content, -10, 100)
                     if (blockHash) {
+                        setError(`Attestation created successfully, Received block hash: ${blockHash}`)
                         const reqData = {
                             title,
                             content,
                             userId,
-                            username: user?.username || '',
+                            username: "an2yea",
                             companyId: user?.companyId || '',
                             companyName: user?.companyName || '',
                             blockHash
@@ -60,6 +71,9 @@ export function PostsTab() {
                         })
                         if (!response.ok) {
                             console.error("Failed to create attestation:", response.statusText)
+                            setError("Failed to create attestation: " + response.statusText)
+                        } else {
+                            // setError("Attestation created successfully")
                         }
                     }
                     if (reputationScore) {
@@ -91,15 +105,15 @@ export function PostsTab() {
                 }
                 setIsCreatePostOpen(false)
                 setTitle("")
-                setContent("")
-                setMedia(null)
-            }
+            setContent("")
+            setMedia(null)
         } catch (error) {
             console.error("Error creating post:", error)
         }
     }
 
     return (
+        <ToastProvider>
         <div className="space-y-8">
             <div>
                 <Button onClick={() => setIsCreatePostOpen(!isCreatePostOpen)}>
@@ -189,7 +203,30 @@ export function PostsTab() {
                     </Card>
                 ))}
             </div>
+            <AnimatePresence>
+      {error && (
+            <Toast variant="destructive">
+              <div className="flex justify-between items-start">
+                <div>
+                  <ToastTitle>Notification</ToastTitle>
+                  <ToastDescription>{error}</ToastDescription>
+                </div>
+                <ToastClose asChild>
+                  <button
+                    onClick={handleCloseError}
+                    className="rounded-full p-1 text-foreground/50 opacity-0 transition-opacity hover:text-foreground focus:opacity-100 focus:outline-none focus:ring-2 group-hover:opacity-100"
+                  >
+                    <X className="h-4 w-4" />
+                    <span className="sr-only">Close</span>
+                  </button>
+                </ToastClose>
+              </div>
+            </Toast>
+          )}
+      </AnimatePresence>
+      <ToastViewport />
         </div>
+        </ToastProvider>
     )
 }
 
