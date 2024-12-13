@@ -138,8 +138,6 @@ export function PostsTab() {
             if (!response.ok) {
                 console.error("Failed to create post:", response.statusText)
             }
-            fetchPosts()
-            fetchCompanies()
             setIsCreatePostOpen(false)
             setTitle("")
             setContent("")
@@ -147,6 +145,8 @@ export function PostsTab() {
         } catch (error) {
             console.error("Error creating post:", error)
         }
+        fetchPosts()
+        fetchCompanies()
     }
 
     return (

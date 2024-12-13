@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { useAuth } from "@/src/contexts/AuthContext"
 import { useDashboardContext } from "@/src/contexts/DashboardContext"
-import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 
