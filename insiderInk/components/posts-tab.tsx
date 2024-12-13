@@ -12,12 +12,8 @@ import { useEffect, useState } from "react"
 import CreatePostForm from "./CreatePostForm"
 
 export function PostsTab() {
-    const [content, setContent] = useState("")
-    const [title, setTitle] = useState("")
-    const [media, setMedia] = useState<File | null>(null)
     const [isCreatePostOpen, setIsCreatePostOpen] = useState(false)
     const { selectedCompanyId, setSelectedCompanyId, companies, posts } = useDashboardContext()
-    const { user, userId } = useDashboardContext()
     const [error, setError] = useState<string | null>(null)
     const filteredPosts = selectedCompanyId
         ? posts.filter(post => post.companyId === selectedCompanyId)
