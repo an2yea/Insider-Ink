@@ -46,8 +46,8 @@ export async function POST(request: Request) {
       userId: userId,
       companyId: companyId,
       companyName: companyName,
-      createdAt: new Date(),
-      updatedAt: new Date(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
     }
 
     console.log("Post data prepared:", postData);
@@ -56,34 +56,32 @@ export async function POST(request: Request) {
       const docRef = await addDoc(collection(db, 'posts'), postData)
       console.log("Post document created with ID:", docRef.id);
 
-      // Update user document with post ID
-      const userDoc = await getDoc(doc(db, 'users', userId))
-      if (userDoc.exists()) {
-        const userData = userDoc.data()
-        const userPosts = userData.posts || []
-        userPosts.push(docRef.id)
-        await updateDoc(doc(db, 'users', userId), { posts: userPosts })
-        console.log("User document updated with new post ID");
-      } else {
-        console.warn("User document not found for ID:", userId);
-      }
+      // // Update user document with post ID
+      // const userDoc = await getDoc(doc(db, 'users', userId))
+      // if (userDoc.exists()) {
+      //   const userData = userDoc.data()
+      //   const userPosts = userData.posts || []
+      //   userPosts.push(docRef.id)
+      //   await updateDoc(doc(db, 'users', userId), { posts: userPosts })
+      //   console.log("User document updated with new post ID");
+      // } else {
+      //   console.warn("User document not found for ID:", userId);
+      // }
 
       // Update company document with post ID
-      const companyDoc = await getDoc(doc(db, 'companies', postData.companyId))
-      if (companyDoc.exists()) {
-        console.log("Company document found, updating with new post ID");
-        const companyAddPostURL = `${process.env.NEXT_PUBLIC_API_URL}/api/companies/add-post`
-        await fetch(companyAddPostURL, {
-          method: 'PUT',
-          body: JSON.stringify({ companyId: postData.companyId, postId: docRef.id }),
-        })
-      }
+      // const companyDoc = await getDoc(doc(db, 'companies', postData.companyId))
+      // if (companyDoc.exists()) {
+      //   console.log("Company document found, updating with new post ID");
+      //   const companyAddPostURL = `${process.env.NEXT_PUBLIC_API_URL}/api/companies/add-post`
+      //   await fetch(companyAddPostURL, {
+      //     method: 'PUT',
+      //     body: JSON.stringify({ companyId: postData.companyId, postId: docRef.id }),
+      //   })
+      // }
 
       return NextResponse.json({
         success: true,
         postId: docRef.id,
-        user: userDoc.data(),
-        company: companyDoc.data(),
       }, { status: 200 })
     } catch (error) {
       console.error('Error creating post:', error)

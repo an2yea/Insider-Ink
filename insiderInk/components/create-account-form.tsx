@@ -17,18 +17,22 @@ import { useState } from "react"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Loader2 } from "lucide-react"
 
-export function CreateAccountForm() {
+export function CreateAccountForm({ error, setError }: { error: string | null, setError: (error: string) => void }) {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [confirmPassword, setConfirmPassword] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-  const [error, setError] = useState("")
+  const [isLoading, setIsLoading] = useState("")
+  //const [error, setError] = useState("")
   const [username, setUsername] = useState("")
   const [walletAddress, setWalletAddress] = useState("")
   const [selectedCompany, setSelectedCompany] = useState<{name: string, id: string}>({name: "", id: ""})
   const { signup } = useAuth()
-  const { setUser, setUserId, companies } = useDashboardContext()
+  const { user, setUser, setUserId, companies } = useDashboardContext()
   const router = useRouter()
+
+  if (user) {
+    router.push("/dashboard")
+  }
 
   const connectMetaMask = async () => {
     const provider = await detectEthereumProvider()
@@ -65,12 +69,13 @@ export function CreateAccountForm() {
       return
     }
     try {
-      setError("")
+      setError("Please check your email for a verification code and wait while we verify your email through ZK and create your account...")
       const isZkSigned = await zkSign(email, username)
       if (!isZkSigned) {
         setError("Failed to verify email")
         return
       }
+      setError("ZK verified, creating your account")
       const user = await signup(email, password, {
         username: username,
         walletAddress: walletAddress,
@@ -84,9 +89,12 @@ export function CreateAccountForm() {
       const userObject = await userData.json() as User
       setUser(userObject) // set the user in the dashboard context
 
+      setError("")
       router.push('/dashboard')
     } catch (err: any) {
       setError(err.message || "Failed to create account")
+      setIsLoading("")
+      setError("")
     }
   }
 
@@ -96,7 +104,7 @@ export function CreateAccountForm() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <Dialog open={!!error} onOpenChange={() => setError("")}>
+      {/* <Dialog open={!!error} onOpenChange={() => setError("")}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Error</DialogTitle>
@@ -105,7 +113,7 @@ export function CreateAccountForm() {
             {error}
           </div>
         </DialogContent>
-      </Dialog>
+      </Dialog> */}
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-center">Create Account</CardTitle>
@@ -122,6 +130,23 @@ export function CreateAccountForm() {
                 onChange={(e) => setUsername(e.target.value)}
                 required
               />
+            </div>
+            <div className="space-y-2">
+              <Select value={selectedCompany.id} onValueChange={(value) => {
+                const company = companies.find(c => c.id === value)
+                setSelectedCompany(company || {name: "", id: ""})
+              }}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a company" />
+                </SelectTrigger>
+                <SelectContent>
+                  {companies.map((company) => (
+                    <SelectItem key={company.id} value={company.id}>
+                      {company.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
@@ -153,24 +178,7 @@ export function CreateAccountForm() {
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 required
               />
-            </div>
-            <div className="space-y-2">
-              <Select value={selectedCompany.id} onValueChange={(value) => {
-                const company = companies.find(c => c.id === value)
-                setSelectedCompany(company || {name: "", id: ""})
-              }}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a company" />
-                </SelectTrigger>
-                <SelectContent>
-                  {companies.map((company) => (
-                    <SelectItem key={company.id} value={company.id}>
-                      {company.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+            </div>  
             {walletAddress && (
               <div className="space-y-2">
                 <Label htmlFor="wallet-address">Wallet Address</Label>
@@ -196,7 +204,7 @@ export function CreateAccountForm() {
           </p>
         </CardFooter>
       </Card>
-      {isLoading && (
+      {isLoading.length > 0 && (
             <motion.div
               key="loading"
               initial={{ opacity: 0, scale: 0.8 }}
@@ -206,7 +214,7 @@ export function CreateAccountForm() {
               className="flex flex-col items-center justify-center h-64"
             >
               <Loader2 className="w-16 h-16 text-primary animate-spin mb-4" />
-              <h2 className="text-2xl font-bold mb-2"> Verifying Email and Creating Account</h2>
+              <h2 className="text-2xl font-bold mb-2"> {isLoading} </h2>
               <p className="text-center text-muted-foreground">
                 Please check your email for a verification code and wait while we verify your email through ZK and create your account...
               </p>

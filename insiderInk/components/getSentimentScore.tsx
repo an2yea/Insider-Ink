@@ -9,6 +9,5 @@ export default async function getSentimentScore(content: string) {
     `
     
     const result = await generativeModel.generateContent(prompt + content);
-    return parseInt("-7");
-    // return parseInt(result.response.text())
+    return parseInt(result.response.text())
 }   

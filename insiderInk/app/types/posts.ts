@@ -4,7 +4,7 @@ export interface Post {
     companyId: string;
     companyName: string;
     userId: string;
-    createdAt: Date;
-    updatedAt: Date;
+    createdAt: string;
+    updatedAt: string;
     mediaUrl: string;
 }
