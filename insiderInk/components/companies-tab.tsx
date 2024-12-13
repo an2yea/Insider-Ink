@@ -34,7 +34,7 @@ export function CompaniesTab() {
                                 <div className="w-full bg-secondary rounded-full h-2.5">
                                     <div
                                         className="bg-primary h-2.5 rounded-full"
-                                        style={{ width: `${(company.averageRating / 10) * 100}%` }}
+                                        style={{ width: `${  ((company.averageRating - 0) / (1000 - 0)) * 100}%` }}
                                     ></div>
                                 </div>
                             </div>

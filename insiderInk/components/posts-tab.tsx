@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { Notification } from "@/components/ui/notification"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Heart } from 'lucide-react'
 import { useDashboardContext } from "@/src/contexts/DashboardContext"
@@ -18,19 +17,21 @@ import { ToastProvider, ToastViewport, Toast, ToastTitle, ToastDescription, Toas
 import { X } from "lucide-react"
 import { Post } from "@/app/types/posts"
 import {format} from 'date-fns'
+import { Company } from "@/app/types/company"
 
 export function PostsTab() {
     const [content, setContent] = useState("")
     const [title, setTitle] = useState("")
     const [media, setMedia] = useState<File | null>(null)
     const [isCreatePostOpen, setIsCreatePostOpen] = useState(false)
-    const { selectedCompanyId, setSelectedCompanyId, companies, posts, setPosts } = useDashboardContext()
+    const { selectedCompanyId, setSelectedCompanyId, companies, posts, setPosts, setCompanies } = useDashboardContext()
     const { user, userId } = useDashboardContext()
     //  const [notification, setNotification] = useState<string | null>(null); // State for notification
     const [error, setError] = useState<string | null>(null)
     const filteredPosts = selectedCompanyId
         ? posts.filter(post => post.companyId === selectedCompanyId)
         : posts
+    
     useEffect(() => {
         if (error) {
             const timer = setTimeout(() => {
@@ -39,7 +40,7 @@ export function PostsTab() {
             return () => clearTimeout(timer)
         }
     }, [error])
-    
+
     const sortedPosts = filteredPosts.sort((a, b) => {
         return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(); // Sort in descending order
     
@@ -55,6 +56,20 @@ export function PostsTab() {
         console.log("Posts:", postsObject)
         setPosts(postsObject) // set the posts in the dashboard context
     }
+    const fetchCompanies = async () => {
+        const companiesData = await fetch("/api/companies/get")
+        const companiesObject = await companiesData.json() as Company[]
+        console.log("Companies:", companiesObject)
+        setCompanies(companiesObject) // set the companies in the dashboard context
+      }
+
+    const getCompany = async() => {
+        const response = await fetch(`/api/companies/${user?.companyId}`, {
+            method: 'GET',
+        })
+        const companyDetails = await response.json() as Company
+        return companyDetails
+    }
     const handleCreatePost = async (e: React.FormEvent) => {
         e.preventDefault()
         console.log("Creating post:", title, content)
@@ -65,9 +80,12 @@ export function PostsTab() {
             setError("Post received, sentiment score: " + sentimentScore)
         }
         try {
+            const company = await getCompany()
+            const companyRating = company.averageRating
+            const companyAddress = company.walletAddress
             if (userId) {
                 setError("Creating attestation for your post...")
-                const { blockHash, reputationScore } = await createWhistle("0x4dfc63734049dcf6219aac77f02edf94b9162c09", title, content, -10, 100)
+                const { blockHash, reputationScore } = await createWhistle(companyAddress, title, content, sentimentScore, companyRating)
                 if (blockHash) {
                     setError(`Attestation created successfully, Received block hash: ${blockHash}`)
                     const reqData = {
@@ -89,12 +107,17 @@ export function PostsTab() {
                     }
                 }
                 if (reputationScore) {
+                    console.log("Updating company reputation score")
                     const response = await fetch(`/api/companies/${user?.companyId}`, {
                         method: 'PATCH',
                         body: JSON.stringify({ averageRating: reputationScore }),
                     })
                     if (!response.ok) {
+                        setError("Failed to update company reputation: Please try again in some time")
                         console.error("Failed to update company reputation:", response.statusText)
+                    } else {
+                        console.log("Updated reputation score")
+                        setError(`Company reputation for ${user?.companyName} updated to, ${reputationScore}`)
                     }
                 }
             }
@@ -116,6 +139,7 @@ export function PostsTab() {
                 console.error("Failed to create post:", response.statusText)
             }
             fetchPosts()
+            fetchCompanies()
             setIsCreatePostOpen(false)
             setTitle("")
             setContent("")
