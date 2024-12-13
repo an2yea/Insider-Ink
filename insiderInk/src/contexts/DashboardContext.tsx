@@ -1,9 +1,11 @@
 "use client"
 
-import { createContext, ReactNode, useContext, useState } from "react"
-import { User } from "@/app/types/user"
 import { Company } from "@/app/types/company"
 import { Post } from "@/app/types/posts"
+import { User } from "@/app/types/user"
+import { createContext, ReactNode, useContext, useState } from "react"
+
+type StatusType = 'loading' | 'success' | 'failure'
 
 interface DashboardContextType {
   user: User | null
@@ -18,12 +20,17 @@ interface DashboardContextType {
   setCompanies: (companies: Company[]) => void
   posts: Post[]
   setPosts: (posts: Post[]) => void
-  loading: boolean
-  setLoading: (loading: boolean) => void
-  loadingMessage: string
-  setLoadingMessage: (loadingMessage: string) => void
-  startLoading: (message: string) => void
-  stopLoading: () => void
+  isStatusOpen: boolean
+  setIsStatusOpen: (isStatusOpen: boolean) => void
+  statusMessage: string
+  setStatusMessage: (statusMessage: string) => void
+  timeout?: number | undefined
+  setTimeout: (timeout: number | undefined) => void
+  statusType: StatusType
+  setStatusType: (statusType: StatusType) => void
+  statusLoading: (message: string) => void
+  statusSuccessful: (message: string) => void
+  statusFailure: (message: string) => void
 }
 
 const DashboardContext = createContext<DashboardContextType | undefined>(undefined)
@@ -35,20 +42,35 @@ export const DashboardProvider = ({ children }: { children: ReactNode }) => {
   const [userId, setUserId] = useState<string | null>(null)   
   const [companies, setCompanies] = useState<Company[]>([])
   const [posts, setPosts] = useState<Post[]>([])
-  const [loading, setLoading] = useState(false)
-  const [loadingMessage, setLoadingMessage] = useState<string>("loading")
+  const [isStatusOpen, setIsStatusOpen] = useState(false)
+  const [statusMessage, setStatusMessage] = useState<string>("")
+  const [timeout, setTimeout] = useState<number | undefined>(undefined)
+  const [statusType, setStatusType] = useState<StatusType>('loading')
   
-  const startLoading = (message: string) => {
-    setLoading(true)
-    setLoadingMessage(message)
+  const statusLoading = (message: string) => {
+    setStatusType('loading')
+    setIsStatusOpen(true)
+    setStatusMessage(message)
+    setTimeout(undefined)
   }
 
-  const stopLoading= () => {
-    setLoading(false)
+
+  const statusSuccessful= (message: string) => {
+    setStatusType("success")
+    setIsStatusOpen(true)
+    setStatusMessage(message)
+    setTimeout(4000)
+  }
+
+  const statusFailure = (message: string) => {
+    setStatusType("failure")
+    setIsStatusOpen(true)
+    setStatusMessage(message)
+    setTimeout(4000)
   }
   
   return (
-    <DashboardContext.Provider value={{ user, setUser, selectedCompanyId, setSelectedCompanyId, activeTab, setActiveTab, userId, setUserId, companies, setCompanies, posts, setPosts, loading, setLoading, loadingMessage, setLoadingMessage, startLoading, stopLoading }}>
+    <DashboardContext.Provider value={{ user, setUser, selectedCompanyId, setSelectedCompanyId, activeTab, setActiveTab, userId, setUserId, companies, setCompanies, posts, setPosts, statusFailure, statusSuccessful,setTimeout ,isStatusOpen, setIsStatusOpen, statusMessage, setStatusMessage, setStatusType, statusType, statusLoading, timeout}}>
       {children}
     </DashboardContext.Provider>
   )

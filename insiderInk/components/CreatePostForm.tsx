@@ -2,35 +2,32 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@radix-ui/react-label"
-import { useState } from "react"
+// import { Label } from "@radix-ui/react-label"
+import { Company } from "@/app/types/company"
+import { Post } from "@/app/types/posts"
 import { useDashboardContext } from "@/src/contexts/DashboardContext"
+import { useState } from "react"
 import createWhistle from "./functions/attestation"
 import getSentimentScore from "./functions/getSentimentScore"
-import { Post } from "@/app/types/posts"
-import { Company } from "@/app/types/company"
 
 const CreatePostForm: React.FC<{ onClose: () => void }> = ({ onClose }) => {
-    const { user, userId, startLoading, stopLoading, setPosts, setCompanies } = useDashboardContext();
+    const { user, userId, statusLoading, statusSuccessful, statusFailure, setPosts, setCompanies } = useDashboardContext();
     const [title, setTitle] = useState("")
     const [content, setContent] = useState("")
     const [media, setMedia] = useState<File | null>(null)
-    const [error, setError] = useState<string | null>(null)
 
     const fetchPosts = async () => {
-        startLoading("Fetching Updated Posts")
+        statusLoading("Fetching Updated Posts")
         const postsData = await fetch("/api/posts/get")
         const postsObject = await postsData.json() as Post[]
         console.log("Posts:", postsObject)
-        stopLoading()
+        statusSuccessful("Posts updated")
         setPosts(postsObject) // set the posts in the dashboard context
     }
     const fetchCompanies = async () => {
-        startLoading("Fetching updated companies with reputation scores")
         const companiesData = await fetch("/api/companies/get")
         const companiesObject = await companiesData.json() as Company[]
         console.log("Companies:", companiesObject)
-        stopLoading()
         setCompanies(companiesObject) // set the companies in the dashboard context
       }
     const getCompany = async() => {
@@ -44,15 +41,13 @@ const CreatePostForm: React.FC<{ onClose: () => void }> = ({ onClose }) => {
     const handleCreatePost = async (e: React.FormEvent) => {
         e.preventDefault();
         console.log("Creating post:", title, content);
-        setError("Creating post...");
-        startLoading("Creating your post");
+        statusLoading("Creating your post")
         let sentimentScore = 0;
 
         if (content) {
-            startLoading("Getting sentiment score for your post");
+            statusLoading("Getting sentiment score for your post")
             sentimentScore = await getSentimentScore(content);
-            stopLoading();
-            setError("Post received, sentiment score: " + sentimentScore);
+            statusSuccessful(`Post received a sentiment score of ${sentimentScore}`)
         }
 
         try {
@@ -61,13 +56,10 @@ const CreatePostForm: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             const companyAddress = company.walletAddress;
 
             if (userId) {
-                setError("Creating attestation for your post...");
-                startLoading("Creating Attestation for your post...");
+                statusLoading("Creating Attestation for your post, this may take a while")
                 const { blockHash, reputationScore } = await createWhistle(companyAddress, title, content, sentimentScore, companyRating);
-                stopLoading();
-
                 if (blockHash) {
-                    setError(`Attestation created successfully, Received block hash: ${blockHash}`);
+                statusSuccessful(`Attestation created successfully, Received block hash: ${blockHash}`)
                     const reqData = {
                         title,
                         content,
@@ -83,25 +75,21 @@ const CreatePostForm: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                     });
 
                     if (!response.ok) {
-                        console.error("Failed to create attestation:", response.statusText);
-                        setError("Failed to create attestation: " + response.statusText);
+                        statusFailure(`Failed to create attestation ${response.statusText}`)
                     }
                 }
 
                 if (reputationScore) {
-                    startLoading("Updating company's reputation score based on your post...");
-                    console.log("Updating company reputation score");
+                    statusLoading(`Updating ${user?.companyName}'s reputation score based on your post from ${companyRating} to ${reputationScore}`)
                     const response = await fetch(`/api/companies/${user?.companyId}`, {
                         method: 'PATCH',
                         body: JSON.stringify({ averageRating: reputationScore }),
                     });
 
                     if (!response.ok) {
-                        setError("Failed to update company reputation: Please try again in some time");
-                        console.error("Failed to update company reputation:", response.statusText);
+                        statusFailure(`Failed to update company reputation: Please try again in some time`)
                     } else {
-                        console.log("Updated reputation score");
-                        setError(`Company reputation for ${user?.companyName} updated to, ${reputationScore}`);
+                        statusSuccessful(`Company reputation for ${user?.companyName} updated from ${companyRating} to ${reputationScore}`)
                     }
                 }
             }
@@ -122,7 +110,7 @@ const CreatePostForm: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             });
 
             if (!response.ok) {
-                console.error("Failed to create post:", response.statusText);
+                statusFailure(`Failed to create post with error: ${response.statusText}`)
             }
 
             onClose(); // Close the form after submission
@@ -130,7 +118,7 @@ const CreatePostForm: React.FC<{ onClose: () => void }> = ({ onClose }) => {
             setContent("");
             setMedia(null);
         } catch (error) {
-            console.error("Error creating post:", error);
+            statusFailure(`Error creating post: ${error}`)
         }
         fetchPosts()
         fetchCompanies()
@@ -155,7 +143,7 @@ const CreatePostForm: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                         onChange={(e) => setContent(e.target.value)}
                         required
                     />
-                    <div>
+                    {/* <div>
                         <Label htmlFor="post-media">Upload Media</Label>
                         <Input
                             id="post-media"
@@ -163,7 +151,7 @@ const CreatePostForm: React.FC<{ onClose: () => void }> = ({ onClose }) => {
                             onChange={(e) => setMedia(e.target.files?.[0] || null)}
                             className="mt-1"
                         />
-                    </div>
+                    </div> */}
                     <Button type="submit"> Create Attestation </Button>
                 </form>
             </CardContent>

@@ -1,8 +1,9 @@
+import { AuthProvider } from "@/src/contexts/AuthContext";
+import { DashboardProvider } from "@/src/contexts/DashboardContext";
+import { StatusDialog } from "@/components/StatusDialog";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { AuthProvider } from "@/src/contexts/AuthContext";
-import { DashboardProvider } from "@/src/contexts/DashboardContext";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -25,6 +26,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // const {isStatusOpen, statusMessage, statusType, timeout, setIsStatusOpen} = useDashboardContext()
   return (
     <html lang="en">
       <body
@@ -32,6 +34,7 @@ export default function RootLayout({
       >
         <AuthProvider>
           <DashboardProvider>
+            <StatusDialog/>
             {children}
           </DashboardProvider>
         </AuthProvider>

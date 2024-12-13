@@ -11,7 +11,7 @@ import TabNavigation from "./tab-navigation"
 
 export function Dashboard() {
   const [activeTab, setActiveTab] = useState(0)
-  const { user, startLoading } = useDashboardContext()
+  const { user } = useDashboardContext()
   const router = useRouter()
   if (!user) {
     router.push("/login")
@@ -19,6 +19,7 @@ export function Dashboard() {
 
   return (
     <div className="min-h-screen bg-background p-8">
+      {/* <StatusDialog /> */}
       <Header />
       <TabNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
       <AnimatePresence mode="wait">

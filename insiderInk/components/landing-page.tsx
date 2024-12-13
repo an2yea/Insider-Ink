@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ArrowRight, Shield, Brain, Users, Eye } from 'lucide-react'
 import { useRouter } from "next/navigation"
+import { StatusDialog } from "./StatusDialog"
 export function LandingPage() {
   const fadeIn = {
     initial: { opacity: 0, y: 20 },
@@ -157,7 +158,7 @@ export function LandingPage() {
 
       <footer className="bg-secondary text-secondary-foreground py-8">
         <div className="container mx-auto px-4 text-center">
-          <p>&copy; 2023 True Network. All rights reserved.</p>
+          <p>&copy; 2024 Insider Ink. All rights reserved.</p>
         </div>
       </footer>
     </div>
