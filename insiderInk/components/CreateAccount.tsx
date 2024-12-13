@@ -11,13 +11,12 @@ import { useAuth } from "@/src/contexts/AuthContext"
 import { useDashboardContext } from "@/src/contexts/DashboardContext"
 import detectEthereumProvider from "@metamask/detect-provider"
 import { motion } from "framer-motion"
-import { Loader2 } from "lucide-react"
 import Link from "next/link"
 import { useRouter } from 'next/navigation'
 import { useState } from "react"
 
 export function CreateAccountForm() {
-  const test_without_zk = false
+  const test_without_zk = true
   
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
