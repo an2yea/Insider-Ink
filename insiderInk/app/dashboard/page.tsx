@@ -2,17 +2,17 @@
 
 import { Dashboard } from "@/components/dashboard"
 import { useAuth } from "@/src/contexts/AuthContext"
-import { useEffect } from "react"
 import { useDashboardContext } from "@/src/contexts/DashboardContext"
 import { useRouter } from "next/navigation"
-import { User } from "../types/user"
+import { useEffect } from "react"
 import { Company } from "../types/company"
 import { Post } from "../types/posts"
+import { User } from "../types/user"
 
 export default function DashboardPage() {
 
   const { user: firebaseUser}  = useAuth()
-  const {setUser, setUserId, setCompanies, setPosts} = useDashboardContext()
+  const {setUser, setUserId, setCompanies, setPosts, isStatusOpen, statusMessage, statusType, timeout, setIsStatusOpen} = useDashboardContext()
   const router = useRouter()
 
   useEffect(() => {
@@ -48,6 +48,8 @@ export default function DashboardPage() {
     fetchPosts()
   }, [])
 
-  return <Dashboard />
+  return <div> 
+  <Dashboard />
+  </div>
 }
 

@@ -1,13 +1,13 @@
 "use client"
 
+import { useDashboardContext } from "@/src/contexts/DashboardContext"
+import { AnimatePresence, motion } from "framer-motion"
+import { useRouter } from "next/navigation"
 import { useState } from "react"
-import { motion, AnimatePresence } from "framer-motion"
-import  TabNavigation  from "./tab-navigation"
+import { CompaniesTab } from "./companies-tab"
 import { Header } from "./header"
 import { PostsTab } from "./posts-tab"
-import { CompaniesTab } from "./companies-tab"
-import { useDashboardContext } from "@/src/contexts/DashboardContext"
-import { useRouter } from "next/navigation"
+import TabNavigation from "./tab-navigation"
 
 export function Dashboard() {
   const [activeTab, setActiveTab] = useState(0)
@@ -19,6 +19,7 @@ export function Dashboard() {
 
   return (
     <div className="min-h-screen bg-background p-8">
+      {/* <StatusDialog /> */}
       <Header />
       <TabNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
       <AnimatePresence mode="wait">

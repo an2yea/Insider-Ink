@@ -16,9 +16,8 @@ export function LoginForm() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const { login } = useAuth()
-  const [error, setError] = useState("")
   const router = useRouter()
-  const { user, setUser, setUserId } = useDashboardContext()
+  const { user, setUser, setUserId, statusFailure, statusLoading, statusSuccessful } = useDashboardContext()
 
   if (user) {
     router.push("/dashboard")
@@ -27,35 +26,31 @@ export function LoginForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
-      setError("")
-      console.log("logging in")
+  
+      statusLoading("Logging you into Insider Ink")
       const res = await login(email, password)
-
+      statusSuccessful("User Verified")
       setUserId(res?.uid)
       // fetch the user data from the database
       const userData = await fetch(`/api/users/${res?.uid}`)
       const userObject = await userData.json() as User
       setUser(userObject) // set the user in the dashboard context
-
       console.log(userObject)
       router.push('/dashboard')
     } catch (err: any) {
-      setError(err.message || "Failed to login")
+      statusFailure(err.message || "Failed to login")
     }
   }
 
   return (
+    <>
+    {/* <StatusDialog /> */}
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
       <Card className="w-full max-w-md">
-        {error && (
-          <div className="p-3 text-sm text-red-500 text-center">
-            {error}
-          </div>
-        )}
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-center">Login</CardTitle>
         </CardHeader>
@@ -97,6 +92,7 @@ export function LoginForm() {
         </CardFooter>
       </Card>
     </motion.div>
+    </>
   )
 }
 
