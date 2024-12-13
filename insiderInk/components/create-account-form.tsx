@@ -14,8 +14,8 @@ import { motion } from "framer-motion"
 import Link from "next/link"
 import { useRouter } from 'next/navigation'
 import { useState } from "react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Loader2 } from "lucide-react"
+import { start } from "repl"
 
 export function CreateAccountForm({ error, setError }: { error: string | null, setError: (error: string) => void }) {
   const [email, setEmail] = useState("")
@@ -27,7 +27,7 @@ export function CreateAccountForm({ error, setError }: { error: string | null, s
   const [walletAddress, setWalletAddress] = useState("")
   const [selectedCompany, setSelectedCompany] = useState<{name: string, id: string}>({name: "", id: ""})
   const { signup } = useAuth()
-  const { user, setUser, setUserId, companies } = useDashboardContext()
+  const { user, setUser, setUserId, companies, startLoading, stopLoading } = useDashboardContext()
   const router = useRouter()
 
   if (user) {
@@ -69,13 +69,13 @@ export function CreateAccountForm({ error, setError }: { error: string | null, s
       return
     }
     try {
-      setError("Please check your email for a verification code and wait while we verify your email through ZK and create your account...")
+      startLoading("Please check your email for a verification code and wait while we verify your email through ZK and create your account...")
       const isZkSigned = await zkSign(email, username)
       if (!isZkSigned) {
         setError("Failed to verify email")
         return
       }
-      setError("ZK verified, creating your account")
+      startLoading("ZK verified, creating your account")
       const user = await signup(email, password, {
         username: username,
         walletAddress: walletAddress,
@@ -104,16 +104,6 @@ export function CreateAccountForm({ error, setError }: { error: string | null, s
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      {/* <Dialog open={!!error} onOpenChange={() => setError("")}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Error</DialogTitle>
-          </DialogHeader>
-          <div className="text-sm text-red-500 text-center">
-            {error}
-          </div>
-        </DialogContent>
-      </Dialog> */}
       <Card className="w-full max-w-md">
         <CardHeader>
           <CardTitle className="text-2xl font-bold text-center">Create Account</CardTitle>

@@ -18,15 +18,16 @@ import { X } from "lucide-react"
 import { Post } from "@/app/types/posts"
 import {format} from 'date-fns'
 import { Company } from "@/app/types/company"
+import { start } from "repl"
 
 export function PostsTab() {
     const [content, setContent] = useState("")
     const [title, setTitle] = useState("")
     const [media, setMedia] = useState<File | null>(null)
     const [isCreatePostOpen, setIsCreatePostOpen] = useState(false)
-    const { selectedCompanyId, setSelectedCompanyId, companies, posts, setPosts, setCompanies } = useDashboardContext()
+    const { selectedCompanyId, setSelectedCompanyId, companies, posts, setPosts, setCompanies, startLoading, stopLoading } = useDashboardContext()
     const { user, userId } = useDashboardContext()
-    //  const [notification, setNotification] = useState<string | null>(null); // State for notification
+
     const [error, setError] = useState<string | null>(null)
     const filteredPosts = selectedCompanyId
         ? posts.filter(post => post.companyId === selectedCompanyId)
@@ -51,15 +52,19 @@ export function PostsTab() {
     }
 
     const fetchPosts = async () => {
+        startLoading("Fetching Updated Posts")
         const postsData = await fetch("/api/posts/get")
         const postsObject = await postsData.json() as Post[]
         console.log("Posts:", postsObject)
+        stopLoading()
         setPosts(postsObject) // set the posts in the dashboard context
     }
     const fetchCompanies = async () => {
+        startLoading("Fetching updated companies with reputation scores")
         const companiesData = await fetch("/api/companies/get")
         const companiesObject = await companiesData.json() as Company[]
         console.log("Companies:", companiesObject)
+        stopLoading()
         setCompanies(companiesObject) // set the companies in the dashboard context
       }
 
@@ -74,9 +79,13 @@ export function PostsTab() {
         e.preventDefault()
         console.log("Creating post:", title, content)
         setError("Creating post...")
+        startLoading("Creating your post")
         let sentimentScore = 0
         if (content) {
+            startLoading("Getting sentiment score for your post")
             sentimentScore = await getSentimentScore(content)
+            startLoading(`Received a sentiment score of ${sentimentScore}`)
+            stopLoading()
             setError("Post received, sentiment score: " + sentimentScore)
         }
         try {
@@ -85,7 +94,9 @@ export function PostsTab() {
             const companyAddress = company.walletAddress
             if (userId) {
                 setError("Creating attestation for your post...")
+                startLoading("Creating Attestation for your post...")
                 const { blockHash, reputationScore } = await createWhistle(companyAddress, title, content, sentimentScore, companyRating)
+                stopLoading()
                 if (blockHash) {
                     setError(`Attestation created successfully, Received block hash: ${blockHash}`)
                     const reqData = {
@@ -107,6 +118,7 @@ export function PostsTab() {
                     }
                 }
                 if (reputationScore) {
+                    startLoading("Updating company's reputation score based on your post...")
                     console.log("Updating company reputation score")
                     const response = await fetch(`/api/companies/${user?.companyId}`, {
                         method: 'PATCH',

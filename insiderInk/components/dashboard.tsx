@@ -8,18 +8,23 @@ import { PostsTab } from "./posts-tab"
 import { CompaniesTab } from "./companies-tab"
 import { useDashboardContext } from "@/src/contexts/DashboardContext"
 import { useRouter } from "next/navigation"
+import { Button } from "./ui/button"
 
 export function Dashboard() {
   const [activeTab, setActiveTab] = useState(0)
-  const { user } = useDashboardContext()
+  const { user, startLoading } = useDashboardContext()
   const router = useRouter()
   if (!user) {
     router.push("/login")
   }
 
+  const handleTestClick = () => {
+    startLoading("testing loading button")
+  }
   return (
     <div className="min-h-screen bg-background p-8">
       <Header />
+      {/* <Button onClick={handleTestClick}> Loading checker</Button> */}
       <TabNavigation activeTab={activeTab} setActiveTab={setActiveTab} />
       <AnimatePresence mode="wait">
         <motion.div

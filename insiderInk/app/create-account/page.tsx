@@ -8,9 +8,10 @@ import { useDashboardContext } from "@/src/contexts/DashboardContext"
 import { ToastProvider, ToastViewport, Toast, ToastTitle, ToastDescription, ToastClose } from "@/components/ui/toast";
 import { useState } from "react"
 import { X } from "lucide-react"
+import { LoadingDialog } from "@/components/loading-dialog"
 
 export default function CreateAccountPage() { 
-  const { setCompanies } = useDashboardContext()
+  const { setCompanies, loading, loadingMessage} = useDashboardContext()
   const [error, setError] = useState<string | null>(null)
   useEffect(() => {
     const fetchCompanies = async () => {
@@ -36,6 +37,7 @@ export default function CreateAccountPage() {
     <ToastProvider>
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       <CreateAccountForm error={error} setError={setError} />
+      <LoadingDialog isOpen={loading} loadingMessage={loadingMessage} />
     </div>
     <AnimatePresence>
       {error && (

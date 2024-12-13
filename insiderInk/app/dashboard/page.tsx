@@ -8,11 +8,12 @@ import { useRouter } from "next/navigation"
 import { User } from "../types/user"
 import { Company } from "../types/company"
 import { Post } from "../types/posts"
+import { LoadingDialog } from "@/components/loading-dialog"
 
 export default function DashboardPage() {
 
   const { user: firebaseUser}  = useAuth()
-  const {setUser, setUserId, setCompanies, setPosts} = useDashboardContext()
+  const {setUser, setUserId, setCompanies, setPosts, loading, loadingMessage} = useDashboardContext()
   const router = useRouter()
 
   useEffect(() => {
@@ -48,6 +49,9 @@ export default function DashboardPage() {
     fetchPosts()
   }, [])
 
-  return <Dashboard />
+  return <div> 
+  <Dashboard />
+  <LoadingDialog isOpen={loading} loadingMessage={loadingMessage}></LoadingDialog>
+  </div>
 }
 
