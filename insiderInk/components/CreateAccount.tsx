@@ -40,7 +40,6 @@ export function CreateAccountForm() {
         const accounts = await (window as any).ethereum.request({ method: "eth_requestAccounts" })
         setWalletAddress(accounts[0])
         setWalletEmail(`${accounts[0]}@gmail.com`)
-        // setWalletEmail( `${walletAddress}@g.com`)
         console.log("Accounts:", accounts)
       } catch (error) {
         statusFailure(`Could not connect Metamask ${error}`)
@@ -96,7 +95,11 @@ export function CreateAccountForm() {
 
       router.push('/dashboard')
     } catch (err: any) {
-      statusFailure(err.message || "Failed to create account")
+      if (err.message.includes("auth/email-already-in-use")){
+        statusFailure("An account with that wallet address exists already, please login instead.")
+      } else {
+        statusFailure(err.message || "Failed to create account")
+      }
     }
   }
 
