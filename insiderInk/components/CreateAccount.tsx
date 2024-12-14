@@ -20,8 +20,8 @@ export function CreateAccountForm() {
   
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const [confirmPassword, setConfirmPassword] = useState("")
   const [username, setUsername] = useState("")
+  const [walletEmail, setWalletEmail] = useState("")
   const [walletAddress, setWalletAddress] = useState("")
   const [selectedCompany, setSelectedCompany] = useState<{name: string, id: string}>({name: "", id: ""})
   const { signup } = useAuth()
@@ -39,12 +39,12 @@ export function CreateAccountForm() {
       try { 
         const accounts = await (window as any).ethereum.request({ method: "eth_requestAccounts" })
         setWalletAddress(accounts[0])
+        setWalletEmail(`${accounts[0]}@gmail.com`)
         console.log("Accounts:", accounts)
       } catch (error) {
         statusFailure(`Could not connect Metamask ${error}`)
       }
     } else {
-
       statusFailure("MetaMask not detected, please install MetaMask")
     }
   }
@@ -80,7 +80,7 @@ export function CreateAccountForm() {
         return
       }
       statusSuccessful("ZK verified, creating your account")
-      const user = await signup(email, password, {
+      const user = await signup(walletEmail, password, {
         username: username,
         walletAddress: walletAddress,
         companyId: selectedCompany.id,
@@ -95,7 +95,11 @@ export function CreateAccountForm() {
 
       router.push('/dashboard')
     } catch (err: any) {
-      statusFailure(err.message || "Failed to create account")
+      if (err.message.includes("auth/email-already-in-use")){
+        statusFailure("An account with that wallet address exists already, please login instead.")
+      } else {
+        statusFailure(err.message || "Failed to create account")
+      }
     }
   }
 
@@ -141,6 +145,9 @@ export function CreateAccountForm() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
+              <p className="text-sm text-muted-foreground">
+               Only for verification, will not be stored.
+            </p>
               <Input
                 id="email"
                 type="email"
@@ -160,16 +167,6 @@ export function CreateAccountForm() {
                 required
               />
             </div>
-            <div className="space-y-2">
-              <Label htmlFor="confirm-password">Confirm Password</Label>
-              <Input
-                id="confirm-password"
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-              />
-            </div>  
             {walletAddress && (
               <div className="space-y-2">
                 <Label htmlFor="wallet-address">Wallet Address</Label>

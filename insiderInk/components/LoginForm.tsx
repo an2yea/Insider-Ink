@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useAuth } from "@/src/contexts/AuthContext"
 import { useDashboardContext } from "@/src/contexts/DashboardContext"
+import detectEthereumProvider from "@metamask/detect-provider"
 import { motion } from "framer-motion"
 import Link from "next/link"
 import { useRouter } from 'next/navigation'
@@ -15,6 +16,7 @@ import { useState } from "react"
 export function LoginForm() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [walletAddress, setWalletAddress] = useState("")
   const { login } = useAuth()
   const router = useRouter()
   const { user, setUser, setUserId, statusFailure, statusLoading, statusSuccessful } = useDashboardContext()
@@ -23,6 +25,24 @@ export function LoginForm() {
     router.push("/dashboard")
   }
 
+  const connectMetaMask = async () => {
+    const provider = await detectEthereumProvider()
+    console.log("Provider:", provider)
+    if (provider) {
+      try { 
+        const accounts = await (window as any).ethereum.request({ method: "eth_requestAccounts" })
+        setWalletAddress(accounts[0])
+        setEmail(`${accounts[0]}@gmail.com`)
+        console.log("Accounts:", accounts)
+      } catch (error) {
+        statusFailure(`Could not connect Metamask ${error}`)
+      }
+    } else {
+      statusFailure("MetaMask not detected, please install MetaMask")
+    }
+  }
+
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     try {
@@ -55,17 +75,19 @@ export function LoginForm() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="your@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
+            
+            {walletAddress && (
+              <div className="space-y-2">
+                <Label htmlFor="wallet-address">Wallet Address</Label>
+                <Input id="wallet-address" type="text" value={walletAddress} disabled />
+              </div>
+            )}
+            {!walletAddress && (
+              <Button onClick={connectMetaMask} className="w-full">
+                Connect MetaMask
+              </Button>
+            )}
+            
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
               <Input
