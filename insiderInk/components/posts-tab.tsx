@@ -3,12 +3,11 @@
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Toast, ToastClose, ToastDescription, ToastProvider, ToastTitle, ToastViewport } from "@/components/ui/toast"
 import { useDashboardContext } from "@/src/contexts/DashboardContext"
 import { format } from 'date-fns'
 import { AnimatePresence } from "framer-motion"
-import { Heart, X } from 'lucide-react'
-import { useEffect, useState } from "react"
+import { Heart } from 'lucide-react'
+import { useState } from "react"
 import CreatePostForm from "./CreatePostForm"
 
 export function PostsTab() {
@@ -19,14 +18,6 @@ export function PostsTab() {
         ? posts.filter(post => post.companyId === selectedCompanyId)
         : posts
     
-    useEffect(() => {
-        if (error) {
-            const timer = setTimeout(() => {
-                setError(null)
-            }, 5000)
-            return () => clearTimeout(timer)
-        }
-    }, [error])
 
     const sortedPosts = filteredPosts.sort((a, b) => {
         return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(); // Sort in descending order
@@ -38,7 +29,6 @@ export function PostsTab() {
     }
 
     return (
-        <ToastProvider>
             <div className="space-y-8">
                 <div>
                     <Button onClick={() => setIsCreatePostOpen(!isCreatePostOpen)}>
@@ -91,30 +81,7 @@ export function PostsTab() {
                         </Card>
                     ))}
                 </div>
-                <AnimatePresence>
-                    {error && (
-                        <Toast variant="destructive">
-                            <div className="flex justify-between items-start">
-                                <div>
-                                    <ToastTitle>Notification</ToastTitle>
-                                    <ToastDescription>{error}</ToastDescription>
-                                </div>
-                                <ToastClose asChild>
-                                    <button
-                                        onClick={handleCloseError}
-                                        className="rounded-full p-1 text-foreground/50 opacity-0 transition-opacity hover:text-foreground focus:opacity-100 focus:outline-none focus:ring-2 group-hover:opacity-100"
-                                    >
-                                        <X className="h-4 w-4" />
-                                        <span className="sr-only">Close</span>
-                                    </button>
-                                </ToastClose>
-                            </div>
-                        </Toast>
-                    )}
-                </AnimatePresence>
-                <ToastViewport />
             </div>
-        </ToastProvider>
     )
 }
 
