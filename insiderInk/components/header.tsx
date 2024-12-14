@@ -2,7 +2,7 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription } from "@/components/ui/dialog"
 import { useAuth } from "@/src/contexts/AuthContext"
 import { useDashboardContext } from "@/src/contexts/DashboardContext"
 import { useRouter } from "next/navigation"
@@ -41,12 +41,12 @@ export function Header( ) {
             <DialogHeader>
               <DialogTitle>User Details</DialogTitle>
             </DialogHeader>
+            <DialogDescription> </DialogDescription>
             <div className="space-y-4">
               <p><strong>Name:</strong> {user?.username}</p>
               <p><strong>Company:</strong> {user?.companyName}</p>
               <p><strong>Wallet Address:</strong> {user?.walletAddress}</p>
-              <Button onClick={() => setIsOpen(false)}>Close</Button>
-              <Button onClick={handleLogout}>Logout</Button>
+              <Button onClick={handleLogout} className="mt-8">Logout</Button>
             </div>
           </DialogContent>
         </Dialog>

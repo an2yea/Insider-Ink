@@ -6,12 +6,14 @@ import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { Card, CardContent } from "@/components/ui/card"
 import { Loader2, CheckCircle, XCircle } from 'lucide-react'
 import { useDashboardContext } from "@/src/contexts/DashboardContext"
+import { Description, DialogTitle } from "@radix-ui/react-dialog"
+import { title } from "process"
 
 
 const statusConfig = {
-  loading: { icon: Loader2, color: 'text-primary', animate: 'animate-spin' },
-  success: { icon: CheckCircle, color: 'text-green-500', animate: '' },
-  failure: { icon: XCircle, color: 'text-red-500', animate: '' },
+  loading: { icon: Loader2, color: 'text-primary', animate: 'animate-spin', title: "Loading" },
+  success: { icon: CheckCircle, color: 'text-green-500', animate: '', title: "Success" },
+  failure: { icon: XCircle, color: 'text-red-500', animate: '', title: "Failed"},
 }
 
 export function StatusDialog() {
@@ -21,7 +23,6 @@ export function StatusDialog() {
     if (isStatusOpen) {
       if (statusType !== 'loading' && timeout) {
         const timer = setTimeout(() => {
-            console.log("Status type", statusType,  "timeout is", timeout)
             setIsStatusOpen(false)
         }, timeout)
         return () => clearTimeout(timer)
@@ -29,11 +30,13 @@ export function StatusDialog() {
     }
   }, [isStatusOpen, statusMessage, statusType, timeout])
 
-  const { icon: Icon, color, animate } = statusConfig[statusType]
+  const { icon: Icon, color, animate, title } = statusConfig[statusType]
 
   return (
     <Dialog open={isStatusOpen} >
       <DialogContent className="sm:max-w-md">
+        <DialogTitle > {title} </DialogTitle>
+        <Description></Description>
         <Card className="border-none shadow-none">
           <CardContent className="flex flex-col items-center justify-center space-y-4 pt-6">
             <motion.div
