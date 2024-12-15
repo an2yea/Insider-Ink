@@ -16,7 +16,7 @@ export default function DashboardPage() {
   const router = useRouter()
 
   useEffect(() => {
-    if (!firebaseUser?.uid) {
+    if (!firebaseUser || !firebaseUser?.uid) {
       router.push("/login")
     }
     setUserId(firebaseUser?.uid || null)

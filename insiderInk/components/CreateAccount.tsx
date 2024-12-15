@@ -16,7 +16,7 @@ import { useRouter } from 'next/navigation'
 import { useState } from "react"
 
 export function CreateAccountForm() {
-  const test_without_zk = true
+  const test_without_zk = false
   
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")

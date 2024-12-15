@@ -17,8 +17,8 @@ const geistMono = localFont({
 });
 
 export const metadata: Metadata = {
-  title: "GenZ Dashboard",
-  description: "A striking and simple dashboard for GenZ users",
+  title: "Insider Ink",
+  description: "Anonymous voices, Verified Truths",
 };
 
 export default function RootLayout({
