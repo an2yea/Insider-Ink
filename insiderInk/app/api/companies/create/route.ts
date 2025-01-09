@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { db } from '@/src/firebase/config';
 import { collection, addDoc } from 'firebase/firestore';
 import { Company } from '@/app/types/company';
-import { generateCompanyHash } from '@/components/functions/generateWalletAddress';
+import { generateCompanyHash } from '@/components/functions/generateCompanyHash';
 
 export async function POST(request: Request) {
   try {

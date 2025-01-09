@@ -6,7 +6,7 @@ import { createHash, randomBytes } from "crypto";
  * @returns A wallet address resembling an Ethereum wallet address.
  */
 
-function generateRandomWalletAddress(): string {
+function generateWalletHash(): string {
     // Generate 20 random bytes
     const randomValue = randomBytes(20);
   
@@ -16,10 +16,10 @@ function generateRandomWalletAddress(): string {
     return walletAddress;
   }
   
-export function generateWalletAddress(url: string): string {
+export function generateCompanyHash(url: string): string {
 
     if (!url) {
-        return generateRandomWalletAddress()
+        return generateWalletHash()
     }
     const normalizedUrl = normalizeUrl(url);
 
