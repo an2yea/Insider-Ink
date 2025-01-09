@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import { db } from '@/src/firebase/config';
 import { collection, addDoc } from 'firebase/firestore';
 import { Company } from '@/app/types/company';
-import { generateWalletAddress } from '@/components/functions/generateWalletAddress';
+import { generateCompanyHash } from '@/components/functions/generateWalletAddress';
 
 export async function POST(request: Request) {
   try {
@@ -20,7 +20,7 @@ export async function POST(request: Request) {
       averageRating: companyData.averageRating || 0,
       logoUrl: companyData.logoUrl || '',
       tags: companyData.tags || [],
-      walletAddress: generateWalletAddress(companyData.website)
+      walletAddress: generateCompanyHash(companyData.website)
     });
 
     return NextResponse.json({ success: true, message: 'Company created successfully' });
